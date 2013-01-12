@@ -1,0 +1,107 @@
+<?xml version="1.0" ?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+	<!-- Currently only scenes and tests are allowed as top-level elements -->
+	<xsd:element name="scene" type="object"/>
+	<xsd:element name="test" type="object"/>
+
+	<xsd:complexType name="object">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<!-- Nested objects -->
+			<xsd:element name="bsdf" type="object"/>
+			<xsd:element name="test" type="object"/>
+			<xsd:element name="mesh" type="object"/>
+			<xsd:element name="integrator" type="object"/>
+			<xsd:element name="camera" type="object"/>
+			<xsd:element name="luminaire" type="object"/>
+			<xsd:element name="sampler" type="object"/>
+			<xsd:element name="rfilter" type="object"/>
+			<xsd:element name="scene" type="object"/>
+			<xsd:element name="medium" type="object"/>
+			<xsd:element name="phase" type="object"/>
+			<xsd:element name="shape" type="object"/>
+			
+			<!-- Properties -->
+			<xsd:element name="integer" type="integer"/>
+			<xsd:element name="float" type="float"/>
+			<xsd:element name="boolean" type="boolean"/>
+			<xsd:element name="string" type="string"/>
+			<xsd:element name="color" type="color"/>
+			<xsd:element name="vector" type="vector"/>
+			<xsd:element name="point" type="point"/>
+			<xsd:element name="transform" type="transform"/>
+		</xsd:choice>
+
+		<xsd:attribute name="type" type="xsd:string" use="optional"/>
+	</xsd:complexType>
+
+	<xsd:simpleType name="booleanType">
+		<xsd:restriction base="xsd:string">
+			<xsd:enumeration value="true"/>
+			<xsd:enumeration value="false"/>
+		</xsd:restriction>
+	</xsd:simpleType>
+
+	<xsd:complexType name="boolean">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="booleanType" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="float">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:double" use="required"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="integer">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:integer" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="string">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="color">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="vector">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="point">
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="transform">
+		<xsd:choice minOccurs="0" maxOccurs="unbounded">
+			<xsd:element name="translate" type="translate"/>
+			<xsd:element name="rotate" type="rotate"/>
+			<xsd:element name="lookat" type="lookat"/>
+			<xsd:element name="scale" type="scale"/>
+		</xsd:choice>
+		<xsd:attribute name="name" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="scale">
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+	
+	<xsd:complexType name="translate">
+		<xsd:attribute name="value" type="xsd:string" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="rotate">
+		<xsd:attribute name="axis" type="xsd:string" use="required"/>
+		<xsd:attribute name="angle" type="xsd:double" use="required"/>
+	</xsd:complexType>
+
+	<xsd:complexType name="lookat">
+		<xsd:attribute name="origin" type="xsd:string" use="required"/>
+		<xsd:attribute name="target" type="xsd:string" use="required"/>
+		<xsd:attribute name="up" type="xsd:string" use="required"/>
+	</xsd:complexType>
+</xsd:schema>

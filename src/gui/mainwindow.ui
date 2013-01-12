@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <property name="windowIcon">
+   <iconset resource="../../resource/resources.qrc">
+    <normaloff>:/Images/Images/wisp.png</normaloff>:/Images/Images/wisp.png</iconset>
+  </property>
+  <widget class="QWidget" name="centralWidget">
+   <property name="layoutDirection">
+    <enum>Qt::LeftToRight</enum>
+   </property>
+  </widget>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>400</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+    <addaction name="actionSave"/>
+    <addaction name="actionSave_As"/>
+    <addaction name="separator"/>
+    <addaction name="actionExit"/>
+   </widget>
+   <widget class="QMenu" name="menuHelp">
+    <property name="title">
+     <string>Help</string>
+    </property>
+    <addaction name="actionAbout"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuHelp"/>
+  </widget>
+  <widget class="QToolBar" name="mainToolBar">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="movable">
+    <bool>false</bool>
+   </property>
+   <property name="floatable">
+    <bool>false</bool>
+   </property>
+   <attribute name="toolBarArea">
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak">
+    <bool>false</bool>
+   </attribute>
+   <addaction name="actionRender"/>
+   <addaction name="actionStop"/>
+   <addaction name="actionRefresh"/>
+   <addaction name="separator"/>
+   <addaction name="actionSetting"/>
+  </widget>
+  <widget class="QStatusBar" name="statusBar"/>
+  <action name="actionSave">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/save16.png</normaloff>:/Images/Images/save16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save</string>
+   </property>
+  </action>
+  <action name="actionSave_As">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/saveas16.png</normaloff>:/Images/Images/saveas16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/open16.png</normaloff>:/Images/Images/open16.png</iconset>
+   </property>
+   <property name="text">
+    <string>Open</string>
+   </property>
+  </action>
+  <action name="actionExit">
+   <property name="text">
+    <string>Exit</string>
+   </property>
+  </action>
+  <action name="actionAbout">
+   <property name="text">
+    <string>About</string>
+   </property>
+  </action>
+  <action name="actionRender">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/play.png</normaloff>:/Images/Images/play.png</iconset>
+   </property>
+   <property name="text">
+    <string>&amp;Render</string>
+   </property>
+   <property name="toolTip">
+    <string>Start rendering</string>
+   </property>
+  </action>
+  <action name="actionStop">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/stop.png</normaloff>:/Images/Images/stop.png</iconset>
+   </property>
+   <property name="text">
+    <string>Stop</string>
+   </property>
+   <property name="toolTip">
+    <string>Stop rendering</string>
+   </property>
+  </action>
+  <action name="actionRefresh">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/refresh.png</normaloff>:/Images/Images/refresh.png</iconset>
+   </property>
+   <property name="text">
+    <string>Refresh</string>
+   </property>
+   <property name="toolTip">
+    <string>Reload the scene file</string>
+   </property>
+  </action>
+  <action name="actionSetting">
+   <property name="icon">
+    <iconset resource="../../resource/resources.qrc">
+     <normaloff>:/Images/Images/settings.png</normaloff>:/Images/Images/settings.png</iconset>
+   </property>
+   <property name="text">
+    <string>Setting</string>
+   </property>
+   <property name="toolTip">
+    <string>Change rendering related setting...</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <resources>
+  <include location="../../resource/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>

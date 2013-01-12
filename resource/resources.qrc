@@ -1,0 +1,16 @@
+<RCC>
+    <qresource prefix="/Images">
+        <file>Images/log.png</file>
+        <file>Images/open16.png</file>
+        <file>Images/play.png</file>
+        <file>Images/refresh.png</file>
+        <file>Images/save16.png</file>
+        <file>Images/saveas16.png</file>
+        <file>Images/settings.png</file>
+        <file>Images/stop.png</file>
+        <file>Images/wisp.png</file>
+    </qresource>
+    <qresource prefix="/Schema">
+        <file>Schema/schema.xsd</file>
+    </qresource>
+</RCC>

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<scene>
+	<integrator type="ao"/>
+	
+	<sampler type="independent">
+		<integer name="sampleCount" value="64"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat origin="0, 0, 100" target="0, 0, 0" up="0, 1, 0"/>
+		</transform>
+		<float name="fov" value="50.6"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="512"/>
+	</camera>
+	
+	<shape type="sphere">
+		<float name="radius" value="30"/>
+		<point name="center" value="-10, 0, 0"/>
+	</shape>
+	
+	<shape type="sphere">
+		<float name="radius" value="30"/>
+		<point name="center" value="10, 0, 0"/>
+	</shape>
+	
+	<shape type="sphere">
+		<float name="radius" value="30"/>
+		<point name="center" value="0, -10, 0"/>
+	</shape>
+	
+	<shape type="sphere">
+		<float name="radius" value="30"/>
+		<point name="center" value="0, 10, 0"/>
+	</shape>
+</scene>
