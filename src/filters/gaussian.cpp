@@ -23,7 +23,7 @@ public:
 
     std::string toString() const
     {
-        return "TentFilter[]";
+        return "GaussianFilter[]";
     }
 protected:
     // f(x) = exp(-alpha*x*x) - exp(-alpha*w*w)
