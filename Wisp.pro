@@ -29,6 +29,9 @@ SOURCES += \
     src/integrators/ao.cpp \
     src/cameras/perspective.cpp \
     src/samplers/independent.cpp \
+    src/filters/tent.cpp \
+    src/filters/gaussian.cpp \
+    src/filters/mitchell.cpp
 
 
 HEADERS  += \

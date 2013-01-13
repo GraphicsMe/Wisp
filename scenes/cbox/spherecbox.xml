@@ -11,8 +11,8 @@
 		<transform name="toWorld">
 			<lookat origin="0, 0, 40" target="0, 0, 0" up="0, 1, 0"/>
 		</transform>
-		<rfilter type="box">
-			<float name="radius" value="2.0"/>
+		<rfilter type="mitchell">
+			<float name="radius" value="4.0"/>
 		</rfilter>
 		<float name="fov" value="50.6"/>
 		<integer name="width" value="512"/>
