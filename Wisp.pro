@@ -31,7 +31,8 @@ SOURCES += \
     src/samplers/independent.cpp \
     src/filters/tent.cpp \
     src/filters/gaussian.cpp \
-    src/filters/mitchell.cpp
+    src/filters/mitchell.cpp \
+    src/shapes/mesh.cpp
 
 
 HEADERS  += \

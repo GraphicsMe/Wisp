@@ -28,9 +28,11 @@ void Scene::addChild(Object *obj)
     switch(obj->getClassType())
     {
     case EShape:
+    case EMesh:
         {
             Shape* shape = dynamic_cast<Shape*>(obj);
             m_shapes.push_back(shape);
+            m_bound.expand(shape->getBoundingBox());
         }
         break;
 
@@ -73,12 +75,12 @@ bool Scene::rayIntersect(const TRay& ray) const
         Shape* shape = m_shapes[i];
         assert (shape != NULL);
 
-        float u, v, t;
-        if (!shape->rayIntersect(ray, u, v, t))
+        Intersection its;
+        if (!shape->rayIntersect(ray, its))
             continue;
 
-        if (t < tmin)
-            tmin = t;
+        if (its.t < tmin)
+            tmin = its.t;
     }
 
     return tmin < Infinity;
@@ -93,15 +95,14 @@ bool Scene::rayIntersect(const TRay& ray, Intersection& its) const
         Shape* shape = m_shapes[i];
         assert (shape != NULL);
 
-        float u, v, t;
-        if (!shape->rayIntersect(ray, u, v, t))
+        if (!shape->rayIntersect(ray, its))
             continue;
 
-        if (t < tmin)
+        if (its.t < tmin)
         {
-            tmin = t;
-            its.t = t;
-            shape->fillIntersectionRecord(ray, its);
+            tmin = its.t;
+            //its.t = t;
+            //shape->fillIntersectionRecord(ray, its);
         }
     }
 

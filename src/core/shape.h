@@ -39,9 +39,10 @@ public:
     virtual float pdf() const = 0;
     virtual void addChild(Object *pChild) = 0;
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const = 0;
-    virtual bool rayIntersect(const TRay& ray, float& u, float& v, float& t) = 0;
+    virtual bool rayIntersect(const TRay& ray, Intersection& its) = 0;
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const = 0;
 
+    virtual BBox getBoundingBox() const = 0;
     const BSDF* getBSDF() const { return m_bsdf; }
     const std::string& getName() const { return m_name; }
 

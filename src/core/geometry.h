@@ -11,7 +11,7 @@ public:
     Vector3f d;
     Vector3f dRcp;
     float mint;
-    float maxt;
+    mutable float maxt;
 
     inline TRay()
         : mint(Epsilon)
@@ -111,6 +111,28 @@ public:
         Vector3f temp = Vector3f(delta, delta, delta);
         pMin -= temp;
         pMax += temp;
+    }
+
+    void expand(const BBox& box)
+    {
+        pMin.x = std::min(pMin.x, box.pMin.x);
+        pMin.y = std::min(pMin.y, box.pMin.y);
+        pMin.z = std::min(pMin.z, box.pMin.z);
+
+        pMax.x = std::max(pMax.x, box.pMax.x);
+        pMax.y = std::max(pMax.y, box.pMax.y);
+        pMax.z = std::max(pMax.z, box.pMax.z);
+    }
+
+    void expand(const Point3f& pt)
+    {
+        pMin.x = std::min(pMin.x, pt.x);
+        pMin.y = std::min(pMin.y, pt.y);
+        pMin.z = std::min(pMin.z, pt.z);
+
+        pMax.x = std::max(pMax.x, pt.x);
+        pMax.y = std::max(pMax.y, pt.y);
+        pMax.z = std::max(pMax.z, pt.z);
     }
 
     float surfaceArea() const

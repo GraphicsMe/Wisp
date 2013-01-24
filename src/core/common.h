@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <thread>
 #include <mutex>
+#include <memory>
 //#include <math.h>
 
 #ifndef M_PI
@@ -21,7 +22,7 @@
 #endif
 #define INV_PI (1.0f/M_PI)
 #define INV_TWOPI (0.5f/M_PI)
-#define Epsilon 1e-4f
+#define Epsilon 1e-3f
 const float Infinity = std::numeric_limits<float>::infinity();
 
 #include <glm/glm.hpp>
@@ -123,6 +124,13 @@ inline int clamp(int value, int min, int max) {
 /// Linearly interpolate between two values
 inline float lerp(float t, float v1, float v2) {
     return ((float) 1 - t) * v1 + t * v2;
+}
+
+template <class T>
+inline void hash_combine(std::size_t& seed, const T& v)
+{
+    std::hash<T> hasher;
+    seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 }
 
 extern std::string formatString(const char *fmt, ...);

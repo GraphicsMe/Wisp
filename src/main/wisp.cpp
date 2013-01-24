@@ -44,6 +44,7 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
+    qDebug() << "App path : " << qApp->applicationDirPath();
     try
     {
         if (argc < 2)

@@ -10,7 +10,8 @@ class AmbientOcclusion : public Integrator
 public:
     AmbientOcclusion(const ParamSet& paramSet)
     {
-        m_length = paramSet.getFloat("length", 1.f);
+        //m_length = paramSet.getFloat("length", 1.0f);
+        m_length = 10.0f;
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const TRay &ray) const
@@ -18,6 +19,7 @@ public:
         Intersection its;
         if (!scene->rayIntersect(ray, its))
             return Color3f(0.0f);
+        //return 0.5f*its.geoFrame.n + Color3f(0.5);
 
         Point2f sample = sampler->next2D();
         Vector3f d = cosineHemisphere(sample.x, sample.y);

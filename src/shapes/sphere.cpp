@@ -9,7 +9,7 @@ public:
     {
         m_radius = paramSet.getFloat("radius", 1.f);
         m_center = paramSet.getPoint("center", Point3f(0.f, 0.f, 0.f));
-        m_diffuse = paramSet.getColor("diffuse", Color3f(0.f, 0.f, 0.f));
+        m_diffuse = paramSet.getColor("albedo", Color3f(0.f, 0.f, 0.f));
     }
 
     ~Sphere()
@@ -44,7 +44,7 @@ public:
         n = dir;
     }
 
-    virtual bool rayIntersect(const TRay& ray, float& u, float& v, float& t)
+    virtual bool rayIntersect(const TRay& ray, Intersection& its)
     {
         Vector3f dir=ray.o-m_center;
         float a = glm::dot(ray.d, ray.d);
@@ -64,9 +64,14 @@ public:
             if (thit > ray.maxt) return false;
         }
 
-        t = thit;
-        Point3f phit = ray(thit);
-        u = v = 1.0f;
+        its.t = thit;
+        //intersection record
+        its.p = ray(its.t);
+        its.uv = Point2f(1.0f, 1.0f);
+        its.color = m_diffuse;
+        its.shape = this;
+        its.geoFrame = Frame(glm::normalize(its.p-m_center));
+        its.shFrame = its.geoFrame;
 
         return true;
     }
@@ -79,6 +84,12 @@ public:
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(its.p-m_center));
         its.shFrame = its.geoFrame;
+    }
+
+    virtual BBox getBoundingBox() const
+    {
+        Vector3f off(m_radius, m_radius, m_radius);
+        return BBox(m_center - off, m_center + off);
     }
 
     std::string toString() const
