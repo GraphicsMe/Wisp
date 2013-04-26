@@ -221,6 +221,8 @@ void BlockRenderThread::operator()()
 
         while (m_blockGenerator->next(block))
         {
+            if (!m_scene->isRendering())
+                break;
             Point2i offset = block.getOffset();
             Vector2i size = block.getSize();
 

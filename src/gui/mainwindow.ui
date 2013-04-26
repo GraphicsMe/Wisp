@@ -133,6 +133,9 @@
    <property name="toolTip">
     <string>Stop rendering</string>
    </property>
+   <property name="shortcut">
+    <string>Alt+S</string>
+   </property>
   </action>
   <action name="actionRefresh">
    <property name="icon">

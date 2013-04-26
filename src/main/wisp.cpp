@@ -17,12 +17,15 @@ void render(Scene* scene, std::string strFileName)
     Vector2i outputSize = camera->getOutputSize();
     ImageBlock result(outputSize, camera->getFilter());
 
-    MainWindow mainWindow(&result);
+    MainWindow mainWindow(&result, scene);
     mainWindow.show();
     BlockGenerator blockGenerator(outputSize, WISP_BLOCK_SIZE);
-    int nCores = getCoreCount();
+
+    scene->start();
+
+    // 1. multi-threaded
     std::vector<std::thread*> threads;
-	
+    int nCores = getCoreCount();
     for (int i = 0; i < nCores; ++i)
     {
         threads.push_back(new std::thread(BlockRenderThread(scene,
@@ -38,13 +41,18 @@ void render(Scene* scene, std::string strFileName)
         threads[i]->join();
         delete  threads[i];
     }
+
+    /*
+    // 2. single-threaded
+    BlockRenderThread th(scene,
+                scene->getSampler(), &blockGenerator, &result);
+    th();*/
 }
 
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 
-    qDebug() << "App path : " << qApp->applicationDirPath();
     try
     {
         if (argc < 2)

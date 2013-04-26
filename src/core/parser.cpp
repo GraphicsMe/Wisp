@@ -18,6 +18,7 @@ public:
         EScene          = Object::EScene,
         EMesh           = Object::EMesh,
         EShape          = Object::EShape,
+        EAccelerator    = Object::EAccelerator,
         EBSDF           = Object::EBSDF,
         ELuminaire      = Object::ELuminaire,
         ECamera         = Object::ECamera,
@@ -56,6 +57,7 @@ public:
         m_tags["scene"]      = EScene;
         m_tags["mesh"]       = EMesh;
         m_tags["shape"]      = EShape;
+        m_tags["accelerator"]= EAccelerator;
         m_tags["bsdf"]       = EBSDF;
         m_tags["luminaire"]  = ELuminaire;
         m_tags["camera"]     = ECamera;
@@ -139,8 +141,7 @@ private:
             Object* obj = ObjectFactory::createInstance(context.attr.value("type").toStdString(), context.paramSet);
             if (obj->getClassType() != tag)
             {
-                throw WispException(formatString("Unexpectedly constructed an object "
-                                    "of type <%s> (expected type <%s>): %s",
+                throw WispException(formatString("Unexpectedly constructed an object of type <%s> (expected type <%s>): %s",
                                 Object::classTypeName(obj->getClassType()).c_str(),
                                 Object::classTypeName(Object::EClassType(tag)).c_str(),
                                 obj->toString().c_str()));
@@ -235,10 +236,11 @@ private:
                     Vector3f up = glm::normalize(parseVector(context.attr.value("up")));
 
                     Vector3f dir = glm::normalize(target - origin);
-                    Vector3f right = glm::cross(dir, up);
-                    Vector3f newUp = glm::cross(right, dir);
+                    Vector3f left = glm::cross(up, dir);
+                    Vector3f newUp = glm::cross(dir, left);
 
-                    Matrix4f toWorldMat(right.x, right.y, right.z, 0.f,
+
+                    Matrix4f toWorldMat(left.x, left.y, left.z, 0.f,
                                         newUp.x, newUp.y, newUp.z, 0.f,
                                         dir.x, dir.y, dir.z, 0.f,
                                         origin.x, origin.y, origin.z, 1.f);

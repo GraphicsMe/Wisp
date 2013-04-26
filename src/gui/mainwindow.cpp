@@ -1,10 +1,14 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "glWidget.h"
+#include "camera.h"
 
-MainWindow::MainWindow(Wisp::ImageBlock* output, QWidget *parent) :
+using namespace Wisp;
+
+MainWindow::MainWindow(ImageBlock* output, Scene* scene, QWidget *parent) :
     QMainWindow(parent),
-    ui(new Ui::MainWindow)
+    ui(new Ui::MainWindow),
+    m_scene(scene)
 {
     ui->setupUi(this);
 
@@ -15,6 +19,7 @@ MainWindow::MainWindow(Wisp::ImageBlock* output, QWidget *parent) :
     m_refreshTimer->setInterval(1000);
 
     connect(m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
+    connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(stop()));
 }
 
 MainWindow::~MainWindow()
@@ -25,4 +30,10 @@ MainWindow::~MainWindow()
 void MainWindow::refresh()
 {
     m_glView->refresh();
+}
+
+void MainWindow::stop()
+{
+    m_scene->stop();
+    m_refreshTimer->stop();
 }

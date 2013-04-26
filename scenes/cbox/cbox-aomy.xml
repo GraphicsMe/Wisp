@@ -4,7 +4,7 @@
 
 <scene>
 	<integrator type="ao">
-		<float name="length" value=".3"/>
+		<float name="length" value=".1"/>
 	</integrator>
 	
 	<sampler type="independent">

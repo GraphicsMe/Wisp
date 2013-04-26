@@ -15,6 +15,7 @@ public:
         EScene,
         EMesh,
         EShape,
+        EAccelerator,
         EBSDF,
         ELuminaire,
         ECamera,
@@ -40,6 +41,7 @@ public:
         case EScene:      return "scene";
         case EMesh:       return "mesh";
         case EShape:      return "shape";
+        case EAccelerator:return "accelerator";
         case EBSDF:       return "bsdf";
         case ELuminaire:  return "luminaire";
         case ECamera:     return "camera";

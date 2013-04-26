@@ -13,6 +13,9 @@ public:
     Scene(const ParamSet&);
     virtual ~Scene();
 
+    inline bool isRendering() const { return m_rendering; }
+    inline void stop() { m_rendering = false; }
+    inline void start() { m_rendering = true; }
     inline const BBox& getBoundingBox() const { return m_bound; }
     inline const Camera* getCamera() const { return m_camera; }
     inline Sampler* getSampler() { return m_sampler; }
@@ -20,6 +23,7 @@ public:
     inline const Integrator* getIntegrator() const { return m_integrator; }
     inline const std::vector<Shape* >& getShapes() const { return m_shapes; }
 
+    void prepare();
     void addChild(Object *obj);
     bool rayIntersect(const TRay& ray) const;
     bool rayIntersect(const TRay& ray, Intersection& its) const;
@@ -28,11 +32,13 @@ public:
     std::string toString() const;
 
 private:
+    bool m_rendering;
     BBox m_bound;
     Camera* m_camera;
     Sampler* m_sampler;
     Integrator* m_integrator;
     std::vector<Shape*> m_shapes;
+    Shape* m_aggregate;
 };
 
 WISP_NAMESPACE_END

@@ -44,6 +44,28 @@ public:
         n = dir;
     }
 
+    virtual bool rayIntersect(const TRay& ray)
+    {
+        Vector3f dir=ray.o-m_center;
+        float a = glm::dot(ray.d, ray.d);
+        float b = 2.0f * glm::dot(ray.d, dir);
+        float c = glm::dot(dir, dir) - m_radius * m_radius;
+        float t0, t1;
+        if (!solveQuadratic(a, b, c, &t0, &t1))
+            return false;
+
+        if (t0 > ray.maxt || t1 < ray.mint)
+            return false;
+
+        float thit = t0;
+        if (t0 < ray.mint)
+        {
+            thit = t1;
+            if (thit > ray.maxt) return false;
+        }
+        return true;
+    }
+
     virtual bool rayIntersect(const TRay& ray, Intersection& its)
     {
         Vector3f dir=ray.o-m_center;

@@ -11,6 +11,7 @@ class TriangleMesh : public Shape
 public:
     friend class Triangle;
 
+    virtual bool canIntersect() const { return false; }
     EClassType getClassType() const { return EMesh; }
 
 protected:
@@ -68,6 +69,40 @@ public:
         Vector3f dir = uniformSphere(sample.x, sample.y);
     }
 
+    virtual bool rayIntersect(const TRay& ray)
+    {
+        Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
+        Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];
+        Point3f p3 = m_pMesh->m_vertexPositions[m_index[2]];
+        Vector3f e1 = p2 - p1;
+        Vector3f e2 = p3 - p1;
+        Vector3f s1 = glm::cross(ray.d, e2);
+        float divisor = glm::dot(s1, e1);
+
+        if (divisor == 0.)
+            return false;
+        float invDivisor = 1.f / divisor;
+
+        // Compute first barycentric coordinate
+        Vector3f d = ray.o - p1;
+        float b1 = glm::dot(d, s1) * invDivisor;
+        if (b1 < 0. || b1 > 1.)
+            return false;
+
+        // Compute second barycentric coordinate
+        Vector3f s2 = glm::cross(d, e1);
+        float b2 = glm::dot(ray.d, s2) * invDivisor;
+        if (b2 < 0. || b1 + b2 > 1.)
+            return false;
+
+        // Compute _t_ to intersection point
+        float t = glm::dot(e2, s2) * invDivisor;
+        if (t < ray.mint || t > ray.maxt)
+            return false;
+
+        return true;
+    }
+
     virtual bool rayIntersect(const TRay& ray, Intersection& its)
     {
         Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
@@ -113,12 +148,17 @@ public:
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
+        Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
+        Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];
+        Point3f p3 = m_pMesh->m_vertexPositions[m_index[2]];
+        Vector3f e1 = p2 - p1;
+        Vector3f e2 = p3 - p1;
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
         //its.color = m_diffuse;
         its.shape = this;
-        //its.geoFrame = Frame(glm::normalize(its.p-m_center));
-        //its.shFrame = its.geoFrame;
+        its.geoFrame = Frame(glm::normalize(glm::cross(e1, e2)));
+        its.shFrame = its.geoFrame;
     }
 
     virtual BBox getBoundingBox() const
@@ -269,6 +309,14 @@ public:
         return 1.0f / area();
     }
 
+    virtual void refine(std::vector<ShapePtr>& refined) const
+    {
+        for (size_t i = 0; i < m_triangles.size(); ++i)
+        {
+            refined.push_back(m_triangles[i]);
+        }
+    }
+
     virtual void addChild(Object *pChild)
     {
         pChild;
@@ -277,6 +325,17 @@ public:
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
     {
         Vector3f dir = uniformSphere(sample.x, sample.y);
+    }
+
+    virtual bool rayIntersect(const TRay &ray)
+    {
+        for (int i = 0; i < m_triangles.size(); ++i)
+        {
+            const TrianglePtr& tri = m_triangles[i];
+            if (tri->rayIntersect(ray))
+                return true;
+        }
+        return false;
     }
 
     virtual bool rayIntersect(const TRay& ray, Intersection& its)
@@ -297,6 +356,7 @@ public:
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
+        its.shape->fillIntersectionRecord(ray, its);
         //its.p = ray(its.t);
         //its.uv = Point2f(1.0f, 1.0f);
         //its.color = m_diffuse;
@@ -349,14 +409,13 @@ protected:
             return hash;
         }
     };
+
     typedef std::unordered_map<OBJVertex, int, OBJVertexHash> VertexMap;
     typedef std::shared_ptr<Triangle> TrianglePtr;
     std::vector<TrianglePtr> m_triangles;
 	Color3f m_diffuse;
     BBox m_bound;
 };
-
-
 
 //WISP_REGISTER_CLASS(Triangle, "triangle")
 WISP_REGISTER_CLASS(WavefrontOBJ, "obj")

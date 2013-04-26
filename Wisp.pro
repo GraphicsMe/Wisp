@@ -32,7 +32,10 @@ SOURCES += \
     src/filters/tent.cpp \
     src/filters/gaussian.cpp \
     src/filters/mitchell.cpp \
-    src/shapes/mesh.cpp
+    src/shapes/mesh.cpp \
+    src/accelerators/kdtree.cpp \
+    src/accelerators/grid.cpp \
+    src/core/aggregate.cpp
 
 
 HEADERS  += \
@@ -53,7 +56,8 @@ HEADERS  += \
     src/core/filter.h \
     src/core/common.h \
     src/core/camera.h \
-    src/core/block.h
+    src/core/block.h \
+    src/core/aggregate.h
 
 FORMS    += \
     src/gui/mainwindow.ui
