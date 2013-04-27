@@ -10,6 +10,7 @@ Scene::Scene(const ParamSet &)
     , m_sampler(NULL)
     , m_integrator(NULL)
     , m_rendering(false)
+    , m_aggregate(NULL)
 {
 
 }
@@ -26,9 +27,15 @@ Scene::~Scene()
 
 void Scene::prepare()
 {
-    /*for (size_t i = 0; i < m_shapes.size(); ++i)
+    if (m_aggregate == NULL)
+    {
+        ParamSet param;
+        Object* obj = ObjectFactory::createInstance("kdtree", param);
+        m_aggregate = static_cast<Shape*>(obj);
+    }
+    for (size_t i = 0; i < m_shapes.size(); ++i)
         m_aggregate->addChild(m_shapes[i]);
-    m_aggregate->prepare();*/
+    m_aggregate->prepare();
 }
 
 void Scene::addChild(Object *obj)
@@ -82,38 +89,12 @@ void Scene::addChild(Object *obj)
 
 bool Scene::rayIntersect(const TRay& ray) const
 {
-    size_t cnt = m_shapes.size();
-    for (size_t i = 0; i < cnt; ++i)
-    {
-        Shape* shape = m_shapes[i];
-        assert (shape != NULL);
-
-        if (shape->rayIntersect(ray))
-            return true;
-    }
-
-    return false;
+    return m_aggregate->rayIntersect(ray);
 }
 
 bool Scene::rayIntersect(const TRay& ray, Intersection& its) const
 {
-    bool hitSomething = false;
-    float tmin = Infinity;
-    size_t cnt = m_shapes.size();
-    for (size_t i = 0; i < cnt; ++i)
-    {
-        Shape* shape = m_shapes[i];
-        assert (shape != NULL);
-
-        if (!shape->rayIntersect(ray, its))
-            continue;
-
-        if (its.t < tmin)
-            tmin = its.t;
-        hitSomething = true;
-    }
-
-    return hitSomething;
+    return m_aggregate->rayIntersect(ray, its);
 }
 
 std::string Scene::toString() const

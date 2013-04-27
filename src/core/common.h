@@ -133,6 +133,51 @@ inline void hash_combine(std::size_t& seed, const T& v)
     seed ^= hasher(v) + 0x9e3779b9 + (seed<<6) + (seed>>2);
 }
 
+inline bool isPowerOf2(int v)
+{
+    return v && (v & (v - 1));
+}
+
+inline size_t roundUpPow2(size_t v)
+{
+    --v;
+    v |= v >> 1;    v |= v >> 2;
+    v |= v >> 4;    v |= v >> 8;
+    v |= v >> 16;
+    return v+1;
+}
+
+inline float log2(float x)
+{
+    static float invLog2 = 1.f / logf(2.f);
+    return logf(x) * invLog2;
+}
+
+inline int floor2Int(float val)
+{
+    return (int) floorf(val);
+}
+
+inline int log2Int(float v)
+{
+    return floor2Int(log2(v));
+}
+
+inline int ceil2Int(float val)
+{
+    return (int) ceilf(val);
+}
+
+inline int round2Int(float val)
+{
+    return floor2Int(val + 0.5f);
+}
+
+inline int float2Int(float val)
+{
+    return (int) val;
+}
+
 extern std::string formatString(const char *fmt, ...);
 
 extern Vector3f uniformSphere(float u1, float u2);

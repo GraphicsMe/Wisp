@@ -89,7 +89,7 @@ public:
     friend BBox merge(const BBox& b, const Point3f& p);
     friend BBox merge(const BBox& b1, const BBox& b2);
 
-    bool rayIntersect(TRay& ray, float& t0, float& t1);
+    bool rayIntersect(const TRay& ray, float& t0, float& t1);
 
     bool overLaps(const BBox& b) const
     {
@@ -157,6 +157,17 @@ public:
     Vector3f getExtents() const
     {
         return pMax - pMin;
+    }
+
+    int maximumExtent() const
+    {
+        Vector3f d = pMax - pMin;
+        if (d.x > d.y && d.x > d.z)
+            return 0;
+        else if (d.y > d.z)
+            return 1;
+        else
+            return 2;
     }
 
     bool operator == (const BBox& b) const

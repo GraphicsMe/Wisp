@@ -32,13 +32,16 @@ struct Intersection
 class Shape : public Object
 {
 public:
-    virtual ~Shape() {}
+	typedef Shape* ShapePtr;
+    
+	virtual ~Shape() {}
 
     virtual void prepare() = 0;
     virtual float area() const = 0;
     virtual float pdf() const = 0;
     virtual bool canIntersect() const { return true; }
-    //virtual void refine(std::vector<ShapePtr>& refined) const {assert(0);}
+    virtual void refine(std::vector<ShapePtr>& refined) const { refined; assert(0);}
+	
     virtual void addChild(Object *pChild) = 0;
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const = 0;
     virtual bool rayIntersect(const TRay& ray) = 0;
@@ -51,8 +54,21 @@ public:
 
     EClassType getClassType() const { return EShape; }
 
+	void fullyRefine(std::vector<ShapePtr> &refined)// const
+	{
+		std::vector<ShapePtr> todo;
+		todo.push_back(ShapePtr(this));//ShapePtr(const_cast<Shape*>(this)));
+		while (todo.size()) {
+			ShapePtr prim = todo.back();
+			todo.pop_back();
+			if (prim->canIntersect())
+				refined.push_back(prim);
+			else
+				prim->refine(todo);
+		}
+	}
+
 protected:
-    typedef std::shared_ptr<Shape> ShapePtr;
     BSDF* m_bsdf;
     std::string m_name;
 };

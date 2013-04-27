@@ -178,7 +178,7 @@ public:
 
 private:
     uint32_t* m_index;
-    std::shared_ptr<TriangleMesh> m_pMesh;
+	TriangleMesh* m_pMesh;
     //Point3f p1, p2, p3;
     //Color3f m_diffuse;
 };
@@ -289,7 +289,7 @@ public:
         {
             Triangle* pTri = new Triangle(i, this);
             m_bound.expand(pTri->getBoundingBox());
-            m_triangles.push_back(TrianglePtr(pTri));
+            m_triangles.push_back(ShapePtr(pTri));
         }
     }
 
@@ -331,7 +331,7 @@ public:
     {
         for (int i = 0; i < m_triangles.size(); ++i)
         {
-            const TrianglePtr& tri = m_triangles[i];
+            const ShapePtr& tri = m_triangles[i];
             if (tri->rayIntersect(ray))
                 return true;
         }
@@ -343,7 +343,7 @@ public:
         bool hitSomething = false;
         for (int i = 0; i < m_triangles.size(); ++i)
         {
-            const TrianglePtr& tri = m_triangles[i];
+            const ShapePtr& tri = m_triangles[i];
             if (tri->rayIntersect(ray, its))
             {
                 ray.maxt = its.t;
@@ -411,8 +411,8 @@ protected:
     };
 
     typedef std::unordered_map<OBJVertex, int, OBJVertexHash> VertexMap;
-    typedef std::shared_ptr<Triangle> TrianglePtr;
-    std::vector<TrianglePtr> m_triangles;
+    //typedef std::shared_ptr<Triangle> TrianglePtr;
+    std::vector<ShapePtr> m_triangles;
 	Color3f m_diffuse;
     BBox m_bound;
 };
