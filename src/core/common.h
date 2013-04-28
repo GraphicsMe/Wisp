@@ -22,7 +22,7 @@
 #endif
 #define INV_PI (1.0f/M_PI)
 #define INV_TWOPI (0.5f/M_PI)
-#define Epsilon 1e-3f
+#define Epsilon 1e-2f
 const float Infinity = std::numeric_limits<float>::infinity();
 
 #include <glm/glm.hpp>

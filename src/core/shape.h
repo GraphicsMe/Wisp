@@ -54,11 +54,12 @@ public:
 
     EClassType getClassType() const { return EShape; }
 
-	void fullyRefine(std::vector<ShapePtr> &refined)// const
+    void fullyRefine(std::vector<ShapePtr> &refined) const
 	{
-		std::vector<ShapePtr> todo;
-		todo.push_back(ShapePtr(this));//ShapePtr(const_cast<Shape*>(this)));
-		while (todo.size()) {
+        std::vector<ShapePtr> todo;
+        todo.push_back(ShapePtr(this));
+        while (todo.size())
+        {
 			ShapePtr prim = todo.back();
 			todo.pop_back();
 			if (prim->canIntersect())

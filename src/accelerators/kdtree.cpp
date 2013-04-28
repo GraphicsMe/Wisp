@@ -386,8 +386,7 @@ private:
         if (!m_bounds.rayIntersect(ray, tmin, tmax))
             return false;
 
-        //Vector3f invDir = ray.dRcp;
-		Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
+        Vector3f invDir = ray.dRcp;
         KdToDo todo[MAX_TODO];
         int todoPos = 0;
         bool hit = false;
