@@ -187,5 +187,6 @@ extern Point2f concentricDisk(float u1, float u2);
 extern bool solveQuadratic(float A, float B, float C, float *t0, float *t1);
 extern int getCoreCount();
 
+extern std::string g_sceneDirectory;
 WISP_NAMESPACE_END
 #endif // COMMON_H

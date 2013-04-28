@@ -191,7 +191,7 @@ public:
         m_diffuse = paramSet.getColor("albedo", Color3f(1.0f, 0.0f, 0.0f));
         Transform toWorld = paramSet.getTransform("toWorld", Transform());
         std::string fileName = paramSet.getString("filename");
-        fileName = "E:/Code/QT/Wisp/scenes/cbox/" + fileName;
+        fileName = g_sceneDirectory + fileName;
         std::ifstream inputStream(fileName);
         if (inputStream.bad())
             throw WispException(formatString("Open object file %s error!", fileName.c_str()));

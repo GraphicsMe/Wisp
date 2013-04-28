@@ -8,8 +8,11 @@
 
 #include <QDebug>
 #include <QApplication>
+#include "common.h"
 
 using namespace Wisp;
+
+std::string Wisp::g_sceneDirectory;
 
 void render(Scene* scene, std::string strFileName)
 {
@@ -49,6 +52,19 @@ void render(Scene* scene, std::string strFileName)
     th();*/
 }
 
+void extractSceneDirectory(const std::string& sceneFile)
+{
+    int pos = sceneFile.find_last_of('\\');
+    if (pos != std::string::npos)
+        g_sceneDirectory = sceneFile.substr(0, pos+1);
+    else
+    {
+        pos == sceneFile.find_last_of('\/');
+        assert (pos != std::string::npos);
+        g_sceneDirectory = sceneFile.substr(0, pos+1);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -60,6 +76,7 @@ int main(int argc, char *argv[])
             std::cerr << "Usage: Wisp <scene.xml>" << std::endl;
             return -1;
         }
+        extractSceneDirectory(argv[1]);
         Wisp::Object* root = Wisp::loadScene(argv[1]);
         if (root->getClassType() == Wisp::Object::EScene)
         {

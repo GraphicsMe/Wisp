@@ -1,7 +1,7 @@
 <scene>
 	<!-- Independent sample generator, 32 samples per pixel -->
 	<sampler type="independent">
-		<integer name="sampleCount" value="1"/>
+		<integer name="sampleCount" value="32"/>
 	</sampler>
 
 	<!-- Use the ambient occlusion integrator -->
@@ -23,6 +23,6 @@
 
 	<!-- Load the Ajax bust (a freely available scan from the Jotero forum) -->
 	<mesh type="obj">
-		<string name="filename" value="E:/Code/QT/Wisp/scenes/ajax/ajax.obj"/>
+		<string name="filename" value="ajax.obj"/>
 	</mesh>
 </scene>
