@@ -4,6 +4,8 @@
 #include "object.h"
 #include "frame.h"
 #include "geometry.h"
+#include "bsdf.h"
+#include "light.h"
 
 WISP_NAMESPACE_BEGIN
 
@@ -29,27 +31,28 @@ struct Intersection
     }
 };
 
+class AreaLight;
 class Shape : public Object
 {
 public:
-	typedef Shape* ShapePtr;
+    typedef Shape* ShapePtr;
     
+    Shape() : m_bsdf(NULL),m_areaLight(NULL) {}
 	virtual ~Shape() {}
 
-    virtual void prepare() = 0;
     virtual float area() const = 0;
     virtual float pdf() const = 0;
     virtual bool canIntersect() const { return true; }
-    virtual void refine(std::vector<ShapePtr>& refined) const { refined; assert(0);}
-	
-    virtual void addChild(Object *pChild) = 0;
+    virtual void refine(std::vector<ShapePtr>&) const { throw WispException("Unimplemented Shape::refine() method called"); }
+
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const = 0;
-    virtual bool rayIntersect(const TRay& ray) = 0;
-    virtual bool rayIntersect(const TRay& ray, Intersection& its) = 0;
+    virtual bool rayIntersect(const TRay& ray) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
+    virtual bool rayIntersect(const TRay& ray, Intersection& its) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const = 0;
 
     virtual BBox getBoundingBox() const = 0;
     const BSDF* getBSDF() const { return m_bsdf; }
+    const AreaLight* getAreaLight() const { return m_areaLight; }
     const std::string& getName() const { return m_name; }
 
     EClassType getClassType() const { return EShape; }
@@ -60,7 +63,7 @@ public:
         todo.push_back(ShapePtr(this));
         while (todo.size())
         {
-			ShapePtr prim = todo.back();
+            ShapePtr prim = todo.back();
 			todo.pop_back();
 			if (prim->canIntersect())
 				refined.push_back(prim);
@@ -71,6 +74,7 @@ public:
 
 protected:
     BSDF* m_bsdf;
+    AreaLight* m_areaLight;
     std::string m_name;
 };
 

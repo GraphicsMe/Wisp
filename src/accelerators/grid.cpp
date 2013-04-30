@@ -5,7 +5,7 @@ WISP_NAMESPACE_BEGIN
 class GridAccel : public Aggregate
 {
 public:
-    GridAccel(const ParamSet& paramSet)
+    GridAccel(const ParamSet&)
     {
 
     }
@@ -27,7 +27,9 @@ public:
 
     virtual void addChild(Object *pChild)
     {
-
+        Shape* shape = static_cast<Shape*>(pChild);
+        assert (shape != NULL);
+        m_primitives.push_back(ShapePtr(shape));
     }
 
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
@@ -47,12 +49,6 @@ public:
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
-        //its.p = ray(its.t);
-        //its.uv = Point2f(1.0f, 1.0f);
-        //its.color = m_diffuse;
-        //its.shape = this;
-        //its.geoFrame = Frame(glm::normalize(its.p-m_center));
-        //its.shFrame = its.geoFrame;
     }
 
     virtual BBox getBoundingBox() const

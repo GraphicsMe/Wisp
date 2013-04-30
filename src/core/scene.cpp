@@ -11,6 +11,7 @@ Scene::Scene(const ParamSet &)
     , m_integrator(NULL)
     , m_rendering(false)
     , m_aggregate(NULL)
+    , m_areaLight(NULL)
 {
 
 }
@@ -46,6 +47,11 @@ void Scene::addChild(Object *obj)
     case EMesh:
         {
             Shape* shape = dynamic_cast<Shape*>(obj);
+            if (shape->getAreaLight() != NULL)
+            {
+                assert (m_areaLight == NULL);
+                m_areaLight = const_cast<AreaLight*>(shape->getAreaLight());
+            }
             m_shapes.push_back(shape);
             m_bound.expand(shape->getBoundingBox());
         }

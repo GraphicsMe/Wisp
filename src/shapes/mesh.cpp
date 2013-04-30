@@ -1,4 +1,6 @@
 #include "shape.h"
+#include "scene.h"
+#include "distribution1D.h"
 #include <fstream>
 #include <sstream>
 #include <unordered_map>
@@ -9,6 +11,14 @@ WISP_NAMESPACE_BEGIN
 class TriangleMesh : public Shape
 {
 public:
+    TriangleMesh() :
+        m_vertexIndex(NULL),
+        m_vertexPositions(NULL),
+        m_vertexNormals(NULL),
+        m_vertexTexCoords(NULL)
+    {
+    }
+
     friend class Triangle;
 
     virtual bool canIntersect() const { return false; }
@@ -26,19 +36,18 @@ protected:
 class Triangle : public Shape
 {
 public:
-    Triangle(uint32_t index, TriangleMesh* pMesh)
+    friend class TriangleMesh;
+    friend class WavefrontOBJ;
+
+    Triangle(uint32_t index, TriangleMesh* pMesh, BSDF* pBSDF, AreaLight* pAreaLight)
         : m_pMesh(pMesh)
         , m_index(&pMesh->m_vertexIndex[3*index])
     {
-
+        m_bsdf = pBSDF;
+        m_areaLight = pAreaLight;
     }
 
     ~Triangle()
-    {
-
-    }
-
-    virtual void prepare()
     {
 
     }
@@ -57,11 +66,6 @@ public:
     virtual float pdf() const
     {
         return 1.0f / area();
-    }
-
-    virtual void addChild(Object *pChild)
-    {
-        pChild;
     }
 
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
@@ -196,7 +200,7 @@ public:
         if (inputStream.bad())
             throw WispException(formatString("Open object file %s error!", fileName.c_str()));
 
-        std::cout << "Loading \"" << fileName << "\" beginning ..." << std::endl;
+        std::cout << "Loading \"" << paramSet.getString("filename") << "\" beginning ... ";
         std::string line;
         std::vector<Point3f>    positions;
         std::vector<Point2f>    texcoords;
@@ -260,7 +264,7 @@ public:
         m_triangleCount = indices.size() / 3;
         m_vertexCount = vertices.size();
 
-        std::cout << "Loading \"" << fileName << "\" finish!" << std::endl;
+        std::cout << "finish!" << std::endl;
         std::cout << "\t Read " << m_triangleCount << " triangles and " << m_vertexCount << " vertices." << std::endl;
 
         m_vertexIndex = new uint32_t[indices.size()];
@@ -284,29 +288,16 @@ public:
             for (size_t i = 0; i < m_vertexCount; ++i)
                 m_vertexTexCoords[i] = texcoords[vertices[i].uv];
         }
-
-        for (size_t i = 0; i < m_triangleCount; ++i)
-        {
-            Triangle* pTri = new Triangle(i, this);
-            m_bound.expand(pTri->getBoundingBox());
-            m_triangles.push_back(ShapePtr(pTri));
-        }
-    }
-
-    virtual void prepare()
-    {
-
     }
 
     virtual float area() const
     {
-        return 1.0f;
-
+        return m_distr.getSum();
     }
 
     virtual float pdf() const
     {
-        return 1.0f / area();
+        return m_distr.getNormalization();
     }
 
     virtual void refine(std::vector<ShapePtr>& refined) const
@@ -317,19 +308,33 @@ public:
         }
     }
 
-    virtual void addChild(Object *pChild)
+    virtual void samplePosition(const Point2f& _sample, Point3f& p, Normal3f& n) const
     {
-        pChild;
+        Point2f sample(_sample);
+        size_t index = m_distr.sampleReuse(sample.x);
+
+        const Triangle* pTriangle = static_cast<const Triangle*>(m_triangles[index]);
+        Point3f p0 = m_vertexPositions[pTriangle->m_index[0]];
+        Point3f p1 = m_vertexPositions[pTriangle->m_index[1]];
+        Point3f p2 = m_vertexPositions[pTriangle->m_index[2]];
+        Point2f b = uniformTriangle(sample.x, sample.y);
+        p = p0 * (1.0f - b.x - b.y) + p1 * b.x + p2 * b.y;
+
+        if (m_vertexNormals)
+        {
+            Normal3f n0 = m_vertexNormals[pTriangle->m_index[0]];
+            Normal3f n1 = m_vertexNormals[pTriangle->m_index[1]];
+            Normal3f n2 = m_vertexNormals[pTriangle->m_index[2]];
+            n = glm::normalize(n0 * (1.0f - b.x - b.y) + n1 * b.x + n2 * b.y);
+        }
+        else
+            n = glm::normalize(glm::cross(p1-p0, p2-p0));
     }
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
-    {
-        Vector3f dir = uniformSphere(sample.x, sample.y);
-    }
-
+    /*
     virtual bool rayIntersect(const TRay &ray)
     {
-        for (int i = 0; i < m_triangles.size(); ++i)
+        for (size_t i = 0; i < m_triangles.size(); ++i)
         {
             const ShapePtr& tri = m_triangles[i];
             if (tri->rayIntersect(ray))
@@ -353,6 +358,7 @@ public:
         }
         return hitSomething;
     }
+    */
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
@@ -375,6 +381,47 @@ public:
         return std::string("WavefrontOBJ[]");
     }
 
+    virtual void addChild(Object* pChild)
+    {
+        switch(pChild->getClassType())
+        {
+        case EBSDF:
+            if (m_bsdf)
+            {
+                std::cout << m_bsdf->toString() << std::endl;
+                throw WispException("Shape: try to register multiple BSDF intances!");
+            }
+            m_bsdf = static_cast<BSDF*>(pChild);
+            break;
+        case ELuminaire:
+            m_areaLight = static_cast<AreaLight*>(pChild);
+            m_areaLight->setShape(this);
+            break;
+
+        default:
+            throw WispException(formatString("Shape::addChild(%s) is not supported!",
+                                             pChild->getClassType()).c_str());
+        }
+    }
+
+    void prepare()
+    {
+        if (!m_bsdf)
+            m_bsdf = static_cast<BSDF*>(ObjectFactory::createInstance("diffuse", ParamSet()));
+        for (size_t i = 0; i < m_triangleCount; ++i)
+        {
+            AreaLight* pAreaLight = const_cast<AreaLight*>(this->getAreaLight());
+            Triangle* pTri = new Triangle(i, this, m_bsdf, pAreaLight);
+            m_bound.expand(pTri->getBoundingBox());
+            m_triangles.push_back(ShapePtr(pTri));
+        }
+
+        m_distr.clear();
+        m_distr.reserve(m_triangleCount);
+        for (size_t i = 0; i < m_triangleCount; ++i)
+            m_distr.append(m_triangles[i]->area());
+        m_distr.normalize();
+    }
 
 protected:
     struct OBJVertex
@@ -415,6 +462,7 @@ protected:
     std::vector<ShapePtr> m_triangles;
 	Color3f m_diffuse;
     BBox m_bound;
+    Distribution1D m_distr;
 };
 
 //WISP_REGISTER_CLASS(Triangle, "triangle")

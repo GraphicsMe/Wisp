@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Manually converted from Mitsuba XML, converted from MDL -->
 <scene>
-	<integrator type="ao"/>
+	<integrator type="mipath"/>
 	
 	<sampler type="independent">
 		<integer name="sampleCount" value="128"/>

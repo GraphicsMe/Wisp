@@ -50,9 +50,8 @@ public:
 
         ray.o = m_cameraToWorld * Point4f(lensP.x, lensP.y, lensP.z, 1.0f);
         ray.d = m_cameraToWorld * d;
-        ray.mint = m_nearClip * invZ;
-        ray.maxt = m_farClip * invZ;
-        ray.update();
+        ray.mint = std::max(ray.mint, m_nearClip * invZ);
+        ray.maxt = std::min(ray.maxt, m_farClip * invZ);
 
         return 1.0f;
     }

@@ -35,7 +35,12 @@ SOURCES += \
     src/shapes/mesh.cpp \
     src/accelerators/kdtree.cpp \
     src/accelerators/grid.cpp \
-    src/core/aggregate.cpp
+    src/core/aggregate.cpp \
+    src/bsdf/microfacet.cpp \
+    src/bsdf/diffuse.cpp \
+    src/bsdf/dielectric.cpp \
+    src/light/arealight.cpp \
+    src/integrators/path.cpp
 
 
 HEADERS  += \
@@ -57,7 +62,10 @@ HEADERS  += \
     src/core/common.h \
     src/core/camera.h \
     src/core/block.h \
-    src/core/aggregate.h
+    src/core/aggregate.h \
+    src/core/bsdf.h \
+    src/core/light.h \
+    src/core/distribution1D.h
 
 FORMS    += \
     src/gui/mainwindow.ui

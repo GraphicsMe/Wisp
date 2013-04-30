@@ -103,6 +103,12 @@ Point2f concentricDisk(float u1, float u2)
     return r * Point2f(sinf(theta), cosf(theta));
 }
 
+Point2f uniformTriangle(float u1, float u2)
+{
+    float a = std::sqrt(1.0f - u1);
+    return Point2f(1.0f - a, a * u2);
+}
+
 bool solveQuadratic(float A, float B, float C, float *t0, float *t1)
 {
     // Find quadratic discriminant

@@ -24,7 +24,6 @@ public:
         , mint(Epsilon)
         , maxt(Infinity)
     {
-        this->update();
     }
 
     inline TRay(const Point3f &o, const Vector3f &d, float mint, float maxt)
@@ -33,7 +32,6 @@ public:
         , mint(mint)
         , maxt(maxt)
     {
-        this->update();
     }
 
     inline TRay(const TRay& ray)
@@ -51,11 +49,6 @@ public:
         , mint(mint)
         , maxt(maxt)
     {}
-
-    inline void update()
-    {
-        dRcp = 1.0f / d;
-    }
 
     inline Point3f operator() (float t) const { return o+t*d; }
 

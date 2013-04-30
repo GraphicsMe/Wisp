@@ -36,4 +36,5 @@ void MainWindow::stop()
 {
     m_scene->stop();
     m_refreshTimer->stop();
+    std::cout << "Rendering Stopped!" << std::endl;
 }

@@ -17,11 +17,6 @@ public:
 
     }
 
-    virtual void prepare()
-    {
-
-    }
-
     virtual float area() const
     {
         return M_PI * m_radius * m_radius;
@@ -30,11 +25,6 @@ public:
     virtual float pdf() const
     {
         return 1.0f / area();
-    }
-
-    virtual void addChild(Object *pChild)
-    {
-        pChild;
     }
 
     virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const

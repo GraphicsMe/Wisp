@@ -12,6 +12,7 @@
 
 using namespace Wisp;
 
+Scene* Wisp::g_scene;
 std::string Wisp::g_sceneDirectory;
 
 void render(Scene* scene, std::string strFileName)
@@ -59,7 +60,7 @@ void extractSceneDirectory(const std::string& sceneFile)
         g_sceneDirectory = sceneFile.substr(0, pos+1);
     else
     {
-        pos == sceneFile.find_last_of('\/');
+        pos = sceneFile.find_last_of('\/');
         assert (pos != std::string::npos);
         g_sceneDirectory = sceneFile.substr(0, pos+1);
     }
@@ -81,6 +82,7 @@ int main(int argc, char *argv[])
         if (root->getClassType() == Wisp::Object::EScene)
         {
             Wisp::Scene* scene = static_cast<Wisp::Scene*>(root);
+            g_scene = scene;
             render(scene, "wisp.pfm");
         }
     }

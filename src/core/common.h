@@ -22,7 +22,7 @@
 #endif
 #define INV_PI (1.0f/M_PI)
 #define INV_TWOPI (0.5f/M_PI)
-#define Epsilon 1e-2f
+#define Epsilon 1e-3f
 const float Infinity = std::numeric_limits<float>::infinity();
 
 #include <glm/glm.hpp>
@@ -183,10 +183,13 @@ extern std::string formatString(const char *fmt, ...);
 extern Vector3f uniformSphere(float u1, float u2);
 extern Vector3f cosineHemisphere(float u1, float u2);
 extern Point2f concentricDisk(float u1, float u2);
+extern Point2f uniformTriangle(float u1, float u2);
 
 extern bool solveQuadratic(float A, float B, float C, float *t0, float *t1);
 extern int getCoreCount();
 
+extern Scene* g_scene;
 extern std::string g_sceneDirectory;
+
 WISP_NAMESPACE_END
 #endif // COMMON_H

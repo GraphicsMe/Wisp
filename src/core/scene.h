@@ -5,6 +5,7 @@
 #include "object.h"
 #include "shape.h"
 #include "geometry.h"
+#include "light.h"
 
 WISP_NAMESPACE_BEGIN
 class Scene : public Object
@@ -28,6 +29,9 @@ public:
     bool rayIntersect(const TRay& ray) const;
     bool rayIntersect(const TRay& ray, Intersection& its) const;
 
+    AreaLight* getAreaLight() const { return m_areaLight; }
+    void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }
+
     EClassType getClassType() const { return EScene; }
     std::string toString() const;
 
@@ -39,6 +43,7 @@ private:
     Integrator* m_integrator;
     std::vector<Shape*> m_shapes;
     Shape* m_aggregate;
+    AreaLight* m_areaLight;
 };
 
 WISP_NAMESPACE_END

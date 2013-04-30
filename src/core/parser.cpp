@@ -292,7 +292,7 @@ class WispMessageHandler : public QAbstractMessageHandler
 Object* loadScene(const string& strFileName)
 {
     //qDebug() << QDir::currentPath();
-    qDebug() << QString::fromStdString(strFileName);
+    qDebug() << "Loading scene from file" << QString::fromStdString(strFileName);
     QFile schemaFile(":/Schema/Schema/schema.xsd");
     QXmlSchema schema;
 

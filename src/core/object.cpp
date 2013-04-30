@@ -4,16 +4,13 @@ WISP_NAMESPACE_BEGIN
 
 void Object::addChild(Object *pChild)
 {
-    pChild;
-    assert (0 && "addChild not implemented!");
+    throw WispException(formatString("Object::addChild is not implemented for object of type %s",
+                                     classTypeName(pChild->getClassType()).c_str()));
 }
 
 void Object::prepare() {}
 
-void Object::setParent(Object *pParent)
-{
-    pParent;
-}
+void Object::setParent(Object*) {}
 
 std::map<std::string, ObjectFactory::Constructor>* ObjectFactory::m_constructors = NULL;
 

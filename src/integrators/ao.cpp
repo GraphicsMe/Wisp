@@ -18,8 +18,6 @@ public:
         Intersection its;
         if (!scene->rayIntersect(ray, its))
             return Color3f(0.0f);
-        //return its.color;
-        //return 0.5f*its.geoFrame.n + Color3f(0.5);
 
         Point2f sample = sampler->next2D();
         Vector3f d = cosineHemisphere(sample.x, sample.y);
@@ -28,7 +26,7 @@ public:
 
         float length = m_length * glm::length(scene->getBoundingBox().getExtents());
 
-        TRay shadowRay(its.p, d, Epsilon, length);
+        TRay shadowRay(its.p, d, 1e-4f*its.t, length);
 
         return Color3f(scene->rayIntersect(shadowRay) ? 0.0f : 1.0f);
     }

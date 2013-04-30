@@ -33,8 +33,9 @@ bool BBox::rayIntersect(const TRay& ray, float& tt0, float& tt1)
 
     for (int i = 0; i < 3; ++i)
     {
-        float tNear = (pMin[i] - ray.o[i]) * ray.dRcp[i];
-        float tFar  = (pMax[i] - ray.o[i]) * ray.dRcp[i];
+        float invRayDir = 1.f / ray.d[i];
+        float tNear = (pMin[i] - ray.o[i]) * invRayDir;
+        float tFar  = (pMax[i] - ray.o[i]) * invRayDir;
         if (tNear > tFar)
             std::swap(tNear, tFar);
         t0 = (tNear > t0 ? tNear : t0);

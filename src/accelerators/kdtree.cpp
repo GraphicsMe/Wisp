@@ -100,9 +100,9 @@ public:
     virtual void prepare()
     {
 		std::vector<ShapePtr>allPrimitives;
-		for (int i = 0; i < m_primitives.size(); ++i)
+        for (size_t i = 0; i < m_primitives.size(); ++i)
 			m_primitives[i]->fullyRefine(allPrimitives);
-		m_primitives.swap(allPrimitives);
+        m_primitives.swap(allPrimitives);
 
         m_nextFreeNode = m_nAllocedNodes = 0;
         if (m_maxDepth <= 0)
@@ -306,7 +306,7 @@ private:
         if (!m_bounds.rayIntersect(ray, tmin, tmax))
             return false;
 
-        Vector3f invDir = ray.dRcp;
+        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
         KdToDo todo[MAX_TODO];
         int todoPos = 0;
         bool hit = false;
@@ -386,7 +386,7 @@ private:
         if (!m_bounds.rayIntersect(ray, tmin, tmax))
             return false;
 
-        Vector3f invDir = ray.dRcp;
+        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
         KdToDo todo[MAX_TODO];
         int todoPos = 0;
         bool hit = false;
