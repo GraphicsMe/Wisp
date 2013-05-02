@@ -14,6 +14,7 @@
 #include <stdint.h>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <memory>
 //#include <math.h>
 
@@ -190,6 +191,7 @@ extern int getCoreCount();
 
 extern Scene* g_scene;
 extern std::string g_sceneDirectory;
+extern std::atomic<double> g_renderFinishTime;
 
 WISP_NAMESPACE_END
 #endif // COMMON_H

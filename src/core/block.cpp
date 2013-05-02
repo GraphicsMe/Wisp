@@ -4,9 +4,12 @@
 #include "integrator.h"
 #include "camera.h"
 #include "filter.h"
+#include "timer.h"
 
 
 WISP_NAMESPACE_BEGIN
+
+std::atomic<double> g_renderFinishTime = 0;
 
 ImageBlock::ImageBlock(const Vector2i& size, const Filter* filter)
     : m_size(size)
@@ -73,14 +76,14 @@ bool ImageBlock::put(const Point2f& pos, const Color3f& value)
     for (int x = x0; x <= x1; ++x)
     {
         float fx = std::abs(x - posX) * invFilterX * FILTER_TABLE_SIZE;
-        m_ifx[x-x0] = std::min((int)std::floor(fx), FILTER_TABLE_SIZE - 1);
+        m_ifx[x-x0] = min((int)std::floor(fx), FILTER_TABLE_SIZE - 1);
     }
 
     float invFilterY = 1.0f / m_filterSize.y;
     for (int y = y0; y <= y1; ++y)
     {
         float fy = std::abs(y - posY) * invFilterY * FILTER_TABLE_SIZE;
-        m_ify[y-y0] = std::min((int)std::floor(fy), FILTER_TABLE_SIZE - 1);
+        m_ify[y-y0] = min((int)std::floor(fy), FILTER_TABLE_SIZE - 1);
     }
 
     for (int y = y0; y <= y1; ++y)
@@ -148,7 +151,7 @@ BlockGenerator::BlockGenerator(const Vector2i& size, int blockSize)
                 (int)std::ceil(size.y / blockSize));
     m_blocksLeft = m_numBlocks.x * m_numBlocks.y;
     m_direction = ERight;
-    m_block = glm::max(Point2i(0, 0), Point2i(m_numBlocks/2-1));
+    m_block = Point2i(max(0, m_numBlocks.x/2-1), max(0, m_numBlocks.y/2-1));
     m_stepsLeft = 1;
     m_numSteps = 1;
 }
@@ -166,7 +169,7 @@ bool BlockGenerator::next(ImageBlock& block)
 
     // set block parameters
     block.setOffset(pos);
-    block.setSize(glm::min(m_size-pos, m_blockSize));
+    block.setSize(min(m_size.x-pos.x, m_blockSize), min(m_size.y-pos.y, m_blockSize));
 
     if (--m_blocksLeft == 0)
     {
@@ -200,10 +203,11 @@ bool BlockGenerator::next(ImageBlock& block)
 }
 
 BlockRenderThread::BlockRenderThread(const Scene *scene, Sampler *sampler,
-    BlockGenerator *blockGenerator, ImageBlock *output)
+    BlockGenerator *blockGenerator, ImageBlock *output, Timer* timer)
     : m_scene(scene)
     , m_blockGenerator(blockGenerator)
     , m_output(output)
+    , m_timer(timer)
 {
     m_sampler = sampler->clone();
 }
@@ -246,6 +250,10 @@ void BlockRenderThread::operator()()
             }
             m_output->put(block);
         }
+        double time = m_timer->currentTime();
+        double t = g_renderFinishTime.load();
+        if (time > t)
+            g_renderFinishTime.store(time);
     }
     catch(const WispException& ex)
     {

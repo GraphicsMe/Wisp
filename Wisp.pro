@@ -40,7 +40,8 @@ SOURCES += \
     src/bsdf/diffuse.cpp \
     src/bsdf/dielectric.cpp \
     src/light/arealight.cpp \
-    src/integrators/path.cpp
+    src/integrators/path.cpp \
+    src/core/timer.cpp
 
 
 HEADERS  += \
@@ -65,7 +66,8 @@ HEADERS  += \
     src/core/aggregate.h \
     src/core/bsdf.h \
     src/core/light.h \
-    src/core/distribution1D.h
+    src/core/distribution1D.h \
+    src/core/timer.h
 
 FORMS    += \
     src/gui/mainwindow.ui

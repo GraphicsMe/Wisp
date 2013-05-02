@@ -17,6 +17,7 @@ public:
     inline void setOffset(const Point2i& offset) { m_offset = offset; }
     inline const Point2i& getOffset() const { return m_offset; }
     inline void setSize(const Vector2i& size) { m_size = size; }
+    inline void setSize(int x, int y) { m_size.x = x; m_size.y = y; }
     inline const Vector2i& getSize() const { return m_size; }
     inline const Vector2i& getTotalSize() const { return m_totalSize; }
     inline const Vector2i& getBorderSize() const { return m_borderSize; }
@@ -67,11 +68,12 @@ protected:
     std::mutex m_mutex;
 };
 
+class Timer;
 class BlockRenderThread
 {
 public:
     BlockRenderThread(const Scene* scene, Sampler* sampler,
-                      BlockGenerator* blockGenerator, ImageBlock* output);
+                      BlockGenerator* blockGenerator, ImageBlock* output, Timer* timer);
 
     void operator()();
 
@@ -80,6 +82,7 @@ private:
     BlockGenerator* m_blockGenerator;
     ImageBlock* m_output;
     Sampler* m_sampler;
+    Timer* m_timer;
 };
 
 WISP_NAMESPACE_END

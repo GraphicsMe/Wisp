@@ -3,7 +3,9 @@
 #include "block.h"
 #include "camera.h"
 #include "parser.h"
+#include "timer.h"
 
+#include <fstream>
 #include <iostream>
 
 #include <QDebug>
@@ -12,6 +14,7 @@
 
 using namespace Wisp;
 
+Wisp::Timer g_timer;
 Scene* Wisp::g_scene;
 std::string Wisp::g_sceneDirectory;
 
@@ -33,7 +36,7 @@ void render(Scene* scene, std::string strFileName)
     for (int i = 0; i < nCores; ++i)
     {
         threads.push_back(new std::thread(BlockRenderThread(scene,
-            scene->getSampler(), &blockGenerator, &result)));
+            scene->getSampler(), &blockGenerator, &result, &g_timer)));
     }
 
     mainWindow.startRefresh();
@@ -53,15 +56,19 @@ void render(Scene* scene, std::string strFileName)
     th();*/
 }
 
-void extractSceneDirectory(const std::string& sceneFile)
+void extractSceneDirectory(const std::string& sceneFile, std::string& fileName)
 {
     int pos = sceneFile.find_last_of('\\');
     if (pos != std::string::npos)
+    {
+        fileName = sceneFile.substr(pos+1);
         g_sceneDirectory = sceneFile.substr(0, pos+1);
+    }
     else
     {
-        pos = sceneFile.find_last_of('\/');
+        pos = sceneFile.find_last_of('/');
         assert (pos != std::string::npos);
+        fileName = sceneFile.substr(pos+1);
         g_sceneDirectory = sceneFile.substr(0, pos+1);
     }
 }
@@ -77,14 +84,24 @@ int main(int argc, char *argv[])
             std::cerr << "Usage: Wisp <scene.xml>" << std::endl;
             return -1;
         }
-        extractSceneDirectory(argv[1]);
+        std::string fileName;
+        extractSceneDirectory(argv[1], fileName);
+
+        g_timer.start();
         Wisp::Object* root = Wisp::loadScene(argv[1]);
+        double loadTime = g_timer.elapsedTime();
+        double renderStart = g_timer.currentTime();
         if (root->getClassType() == Wisp::Object::EScene)
         {
             Wisp::Scene* scene = static_cast<Wisp::Scene*>(root);
             g_scene = scene;
             render(scene, "wisp.pfm");
         }
+        double renderTime = g_renderFinishTime - renderStart;
+        g_timer.stop();
+        std::ofstream log("wisp.log", std::ofstream::app | std::ofstream::out);
+        log << fileName << "\t\t" << std::fixed <<
+               loadTime << "\t\t" << renderTime << std::endl;
     }
     catch(const Wisp::WispException& ex)
     {
