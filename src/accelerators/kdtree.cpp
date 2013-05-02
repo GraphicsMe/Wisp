@@ -50,27 +50,21 @@ private:
 
 struct BoundEdge
 {
+    float t;
+    int primNum;
+    enum EventType{ START = 2, PLANAR = 1, END = 0 } type;
 
     BoundEdge() {}
-    BoundEdge(float tt, int pn, bool starting) : t(tt), primNum(pn)
+    BoundEdge(float tt, int pn, EventType tp) : t(tt), primNum(pn), type(tp)
     {
-        type = starting ? START : END;
     }
+
     bool operator < (const BoundEdge& rhs) const
     {
         if (t == rhs.t)
-        {
-			if (primNum == rhs.primNum)
-				return (int)type > (int)rhs.type;
-			else
-				return (int)type < (int)rhs.type;
-		}
+            return (int)type < (int)rhs.type;
         return t < rhs.t;
     }
-
-    float t;
-    int primNum;
-    enum { START = 1, END = 0 } type;
 };
 
 struct KdToDo {
@@ -220,22 +214,32 @@ private:
 
         size_t axis = nodeBounds.maximumExtent();
         int retries = 0;
+        bool left[3] = {false};
+        int indexCount[3] = {0};
 
         retrySplit:
+        left[axis] = false;
+        indexCount[axis] = 0;
         for (int i = 0; i < nPrimitives; ++i)
         {
             int pn = primNums[i];
             const BBox& bbox = allPrimBounds[pn];
 			assert(bbox.pMin[axis] <= bbox.pMax[axis]);
-            edges[axis][2*i  ] = BoundEdge(bbox.pMin[axis], pn, true);
-            edges[axis][2*i+1] = BoundEdge(bbox.pMax[axis], pn, false);
+            if (bbox.pMin[axis] == bbox.pMax[axis])
+                edges[axis][indexCount[axis]++] = BoundEdge(bbox.pMin[axis], pn, BoundEdge::PLANAR);
+            else
+            {
+                edges[axis][indexCount[axis]++] = BoundEdge(bbox.pMin[axis], pn, BoundEdge::START);
+                edges[axis][indexCount[axis]++] = BoundEdge(bbox.pMax[axis], pn, BoundEdge::END);
+            }
         }
-        std::sort(&edges[axis][0], &edges[axis][2*nPrimitives]);
+        std::sort(&edges[axis][0], &edges[axis][indexCount[axis]]);
 
         int nBelow = 0, nAbove = nPrimitives;
-        for (int i = 0; i < 2*nPrimitives; ++i)
+        for (int i = 0; i < indexCount[axis]; ++i)
         {
-            if (edges[axis][i].type == BoundEdge::END)
+            int curType = edges[axis][i].type;
+            if (curType == BoundEdge::END)
                 --nAbove;
             float edget = edges[axis][i].t;
             if (edget > nodeBounds.pMin[axis] && edget < nodeBounds.pMax[axis])
@@ -252,8 +256,28 @@ private:
                 float pAbove = aboveSA * invTotalSA;
                 float eb = (nAbove == 0 || nBelow == 0) ? m_emptyBonus : 0.f;
                 float cost = m_traversalCost + m_isectCost * (1.f - eb) * (pBelow*nBelow + pAbove*nAbove);
-
-                if (cost < bestCost)
+                if (curType == BoundEdge::PLANAR)
+                {
+                    int cnt = 1;
+                    while (i+cnt < indexCount[axis] &&
+                           edges[axis][i+cnt].type == curType &&
+                           edges[axis][i+cnt].t == edges[axis][i].t)
+                        ++cnt;
+                    nBelow += cnt;
+                    nAbove -= cnt;
+                    float eb1 = (nAbove == 0 || nBelow == 0) ? m_emptyBonus : 0.f;
+                    float cost1 = m_traversalCost + m_isectCost * (1.f - eb1) * (pBelow*nBelow + pAbove*nAbove);
+                    float minCost = std::min(cost, cost1);
+                    if (minCost < bestCost)
+                    {
+                        bestCost = minCost;
+                        bestAxis = axis;
+                        bestOffset = i;
+                        left[axis] = (cost1 < cost ? true : false);
+                    }
+                    i += cnt - 1;
+                }
+                else if (cost < bestCost)
                 {
                     bestCost = cost;
                     bestAxis = axis;
@@ -261,10 +285,9 @@ private:
                 }
             }
 
-            if (edges[axis][i].type == BoundEdge::START)
+            if (curType == BoundEdge::START)
                 ++nBelow;
         }
-        assert (nBelow == nPrimitives && nAbove == 0);
 
         if (bestAxis == -1 && retries < 2)
         {
@@ -282,12 +305,25 @@ private:
             return;
         }
 
-        int n0 = 0, n1 = 0;
-        for (int i = 0; i < bestOffset; ++i)
-            if (edges[bestAxis][i].type == BoundEdge::START)
+        int n0 = 0, n1 = 0, i = 0;
+        for (; i < bestOffset; ++i)
+            if (edges[bestAxis][i].type != BoundEdge::END)
                 prims0[n0++] = edges[bestAxis][i].primNum;
-        for (int i = bestOffset+1; i < 2*nPrimitives; ++i)
-            if (edges[bestAxis][i].type == BoundEdge::END)
+        if (edges[bestAxis][bestOffset].type == BoundEdge::PLANAR)
+        {
+            int* n = (left[bestAxis] ? &n1 : &n0);
+            size_t* prim = (left[bestAxis] ? prims1 : prims0);
+            i = bestOffset;
+            do
+            {
+                prim[(*n)++] = edges[bestAxis][i].primNum;
+                ++i;
+            }while (i < indexCount[bestAxis] &&
+                    edges[bestAxis][i].type == BoundEdge::PLANAR &&
+                    edges[bestAxis][i].t == edges[bestAxis][bestOffset].t);
+        }
+        for (; i < indexCount[bestAxis]; ++i)
+            if (edges[bestAxis][i].type != BoundEdge::START)
                 prims1[n1++] = edges[bestAxis][i].primNum;
         float tsplit = edges[bestAxis][bestOffset].t;
         BBox bounds0 = nodeBounds, bounds1 = nodeBounds;
