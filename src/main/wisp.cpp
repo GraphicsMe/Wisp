@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         double renderTime = g_renderFinishTime - renderStart;
         g_timer.stop();
         std::ofstream log("wisp.log", std::ofstream::app | std::ofstream::out);
-        log << fileName << "\t\t" << std::fixed <<
+        log << fileName << "\t\t\t" << std::fixed <<
                loadTime << "\t\t" << renderTime << std::endl;
     }
     catch(const Wisp::WispException& ex)

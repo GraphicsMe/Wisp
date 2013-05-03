@@ -41,7 +41,8 @@ SOURCES += \
     src/bsdf/dielectric.cpp \
     src/light/arealight.cpp \
     src/integrators/path.cpp \
-    src/core/timer.cpp
+    src/core/timer.cpp \
+    src/samplers/stratified.cpp
 
 
 HEADERS  += \

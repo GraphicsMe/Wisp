@@ -20,6 +20,7 @@ public:
 
 protected:
     size_t m_sampleCount;
+    size_t m_sampleIndex;
 };
 
 WISP_NAMESPACE_END

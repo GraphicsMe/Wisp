@@ -25,4 +25,18 @@
 	<mesh type="obj">
 		<string name="filename" value="ajax.obj"/>
 	</mesh>
+	<mesh type="obj">
+		<string name="filename" value="plane.obj"/>
+		<transform name="toWorld">
+			<scale value="5000, 1, 50000"/>
+		</transform>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="plane.obj"/>
+		<transform name="toWorld">
+			<scale value="20,-1,20"/>
+			<translate value="0,80,50"/>
+		</transform>
+	</mesh>
 </scene>

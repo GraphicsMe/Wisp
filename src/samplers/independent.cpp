@@ -3,23 +3,23 @@
 
 WISP_NAMESPACE_BEGIN
 
-class Independent : public Sampler
+class IndependentSampler : public Sampler
 {
 public:
-    Independent(const ParamSet& paramSet)
+    IndependentSampler(const ParamSet& paramSet)
     {
         m_sampleCount = (size_t) paramSet.getInteger("sampleCount", 1);
         m_random = new Random();
     }
 
-    virtual ~Independent()
+    virtual ~IndependentSampler()
     {
         delete m_random;
     }
 
     Sampler* clone()
     {
-        Independent* cloned = new Independent();
+        IndependentSampler* cloned = new IndependentSampler();
         cloned->m_sampleCount = m_sampleCount;
         cloned->m_random = new Random();
         cloned->m_random->seed(m_random);
@@ -45,13 +45,13 @@ public:
     }
 
 protected:
-    Independent() {}
+    IndependentSampler() {}
 
 protected:
     Random* m_random;
 
 };
 
-WISP_REGISTER_CLASS(Independent, "independent")
+WISP_REGISTER_CLASS(IndependentSampler, "independent")
 
 WISP_NAMESPACE_END
