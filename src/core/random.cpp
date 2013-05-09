@@ -52,6 +52,12 @@ Random::Random() {
     m_mti = MT_N+1;
 }
 
+Random::Random(Random* random)
+{
+    m_mti=MT_N+1; /* mti==N+1 means mt[N] is not initialized */
+    seed(random);
+}
+
 /* initializes mt[MT_N] with a seed */
 void Random::seed(uint32_t s) {
     m_mt[0] = s & 0xffffffffUL;

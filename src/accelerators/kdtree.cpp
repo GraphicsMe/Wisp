@@ -150,12 +150,6 @@ public:
         m_primitives.push_back(ShapePtr(shape));
     }
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
-    {
-		n;
-        Vector3f dir = uniformSphere(sample.x, sample.y);
-    }
-
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
 		ray;

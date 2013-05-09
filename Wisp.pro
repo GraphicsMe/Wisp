@@ -42,7 +42,9 @@ SOURCES += \
     src/light/arealight.cpp \
     src/integrators/path.cpp \
     src/core/timer.cpp \
-    src/samplers/stratified.cpp
+    src/samplers/stratified.cpp \
+    src/phase/isotropic.cpp \
+    src/integrators/mipath.cpp
 
 
 HEADERS  += \
@@ -68,7 +70,9 @@ HEADERS  += \
     src/core/bsdf.h \
     src/core/light.h \
     src/core/distribution1D.h \
-    src/core/timer.h
+    src/core/timer.h \
+    src/core/medium.h \
+    src/core/phase.h
 
 FORMS    += \
     src/gui/mainwindow.ui

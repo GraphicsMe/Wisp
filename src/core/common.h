@@ -6,6 +6,7 @@
 #define WISP_NAMESPACE_BEGIN namespace Wisp {
 #define WISP_NAMESPACE_END }
 
+#include <sstream>
 #include <iostream>
 #include <algorithm>
 #include <map>
@@ -16,13 +17,16 @@
 #include <mutex>
 #include <atomic>
 #include <memory>
-//#include <math.h>
+#include <math.h>
+//#include <cmath>
+#include <float.h>
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846f
 #endif
 #define INV_PI (1.0f/M_PI)
 #define INV_TWOPI (0.5f/M_PI)
+#define INV_FOURPI (0.25/M_PI)
 #define Epsilon 1e-3f
 const float Infinity = std::numeric_limits<float>::infinity();
 
@@ -178,6 +182,25 @@ inline int float2Int(float val)
 {
     return (int) val;
 }
+
+inline bool isValid(Color3f col)
+{
+    if (col.x < 0 ||_isnan(col.x) || !_finite(col.x))
+        return false;
+    if (col.y < 0 ||_isnan(col.y) || !_finite(col.y))
+        return false;
+    if (col.z < 0 ||_isnan(col.z) || !_finite(col.z))
+        return false;
+    return true;
+}
+
+inline float powerHeuristic(int nf, float fPdf, int ng, float gPdf)
+{
+    float f = nf * fPdf, g = ng * gPdf;
+    float ff = f*f;
+    return ff / (ff + g*g);
+}
+
 
 extern std::string formatString(const char *fmt, ...);
 

@@ -5,10 +5,10 @@
 #include "geometry.h"
 
 WISP_NAMESPACE_BEGIN
-class PathIntegrator : public Integrator
+class MIPathIntegrator : public Integrator
 {
 public:
-    PathIntegrator(const ParamSet& paramSet)
+    MIPathIntegrator(const ParamSet& paramSet)
     {
         m_maxDepth = paramSet.getInteger("maxDepth", 10);
     }
@@ -74,11 +74,11 @@ public:
 
     std::string toString() const
     {
-        return formatString("PathIntegrator[]");
+        return formatString("MIPathIntegrator[]");
     }
 private:
     int m_maxDepth;
 };
 
-WISP_REGISTER_CLASS(PathIntegrator, "path")
+WISP_REGISTER_CLASS(MIPathIntegrator, "mipath")
 WISP_NAMESPACE_END

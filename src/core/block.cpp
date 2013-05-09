@@ -61,6 +61,7 @@ void ImageBlock::clear()
 
 bool ImageBlock::put(const Point2f& pos, const Color3f& value)
 {
+    assert (isValid(value));
     float posX = pos.x - 0.5f + m_borderSize.x - m_offset.x;
     float posY = pos.y - 0.5f + m_borderSize.y - m_offset.y;
     int x0 = (int)std::ceil(posX - m_filterSize.x);
@@ -235,6 +236,7 @@ void BlockRenderThread::operator()()
             {
                 for (int x = 0; x < size.x; ++x)
                 {
+                    m_sampler->generate();
                     for (size_t i = 0; i < m_sampler->getSampleCount(); ++i)
                     {
                         Point2f pixelSample = Point2f(offset.x + x, offset.y + y)
@@ -243,8 +245,8 @@ void BlockRenderThread::operator()()
                         TRay ray;
                         float weight = camera->generateRay(pixelSample, lensSample, ray);
                         Color3f radiance = integrator->Li(m_scene, m_sampler, ray);
-
                         block.put(pixelSample, weight*radiance);
+                        m_sampler->advance();
                     }
                 }
             }

@@ -16,11 +16,23 @@ class Random
 {
 public:
     Random();
+    Random(Random* random);
     void seed(uint32_t value);
     void seed(uint32_t* values, int length);
     void seed(Random* random);
     uint32_t nextUInt();
     float nextFloat();
+
+    template <typename T>
+    void shuffle(T* samp, size_t count, size_t dims = 1)
+    {
+        for (size_t i = 0; i < count; ++i)
+        {
+            size_t other = i + nextUInt() % (count - i);
+            for (size_t j = 0; j < dims; ++j)
+                std::swap(samp[dims*i+j], samp[dims*other+j]);
+        }
+    }
 
 private:
     uint32_t m_mt[MT_N];

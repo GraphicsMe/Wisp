@@ -28,9 +28,12 @@ void AreaLight::samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) c
     m_shape->samplePosition(sample, p, n);
 }
 
-float AreaLight::pdf() const
+float AreaLight::pdf(Point3f p, Point3f lp, Normal3f& n) const
 {
-    return m_shape->pdf();
+    float pdfArea = m_shape->pdf();
+    Vector3f dir = p - lp;
+    float lenSqr = glm::dot(dir, dir);
+    return pdfArea * lenSqr * std::sqrt(lenSqr) / std::max(0.f, glm::dot(n, dir));
 }
 
 Color3f AreaLight::radiance() const

@@ -15,20 +15,22 @@ public:
     {
     }
 
-    Color3f sample_f(const Vector3f& wo, Vector3f& wi, const Point2f& sample) const
+    Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const
     {
-        wi = cosineHemisphere(sample.x, sample.y);
+        bRec.wi = cosineHemisphere(sample.x, sample.y);
         return m_albedo;
     }
 
-    Color3f f(const Vector3f& wo, const Vector3f& wi) const
+    Color3f f(const BSDFQueryRecord& bRec) const
     {
         return m_albedo * INV_PI;
     }
 
-    float pdf(const Vector3f& wo, const Vector3f& wi) const
+    float pdf(const BSDFQueryRecord& bRec) const
     {
-        return Frame::cosTheta(wi) * INV_PI;
+        if (Frame::cosTheta(bRec.wi) <= 0 || Frame::cosTheta(bRec.wo) <= 0)
+            return 0.0f;
+        return Frame::cosTheta(bRec.wi) * INV_PI;
     }
 
     std::string toString() const

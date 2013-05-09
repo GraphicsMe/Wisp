@@ -68,11 +68,6 @@ public:
         return 1.0f / area();
     }
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
-    {
-        Vector3f dir = uniformSphere(sample.x, sample.y);
-    }
-
     virtual bool rayIntersect(const TRay& ray)
     {
         Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
@@ -330,35 +325,6 @@ public:
         else
             n = glm::normalize(glm::cross(p1-p0, p2-p0));
     }
-
-    /*
-    virtual bool rayIntersect(const TRay &ray)
-    {
-        for (size_t i = 0; i < m_triangles.size(); ++i)
-        {
-            const ShapePtr& tri = m_triangles[i];
-            if (tri->rayIntersect(ray))
-                return true;
-        }
-        return false;
-    }
-
-    virtual bool rayIntersect(const TRay& ray, Intersection& its)
-    {
-        bool hitSomething = false;
-        for (int i = 0; i < m_triangles.size(); ++i)
-        {
-            const ShapePtr& tri = m_triangles[i];
-            if (tri->rayIntersect(ray, its))
-            {
-                ray.maxt = its.t;
-                its.color = m_diffuse;
-                hitSomething = true;
-            }
-        }
-        return hitSomething;
-    }
-    */
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {

@@ -23,7 +23,7 @@ public:
     Color3f sample_f(const Point3f& p) const;
     void setShape(Shape* shape) { m_shape = shape; }
     void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const;
-    float pdf() const;
+    float pdf(Point3f p, Point3f lp, Normal3f& n) const;
     Color3f radiance() const;
 
     std::string toString() const;

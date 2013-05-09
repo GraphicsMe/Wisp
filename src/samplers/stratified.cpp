@@ -1,4 +1,4 @@
-/*#include "sampler.h"
+#include "sampler.h"
 #include "random.h"
 
 WISP_NAMESPACE_BEGIN
@@ -14,12 +14,12 @@ public:
         while (i * i < desiredSampleCount)
             ++i;
 
+        m_resolution = i;
+        m_sampleCount = m_resolution * m_resolution;
+
         if (m_sampleCount != desiredSampleCount)
             std::cout << "Sample count should be a perfect square -- rounding to "
                       << m_sampleCount << std::endl;
-
-        m_resolution = i;
-        m_sampleCount = m_resolution * m_resolution;
 
         m_depth = paramSet.getInteger("depth", 3);
         m_permutations1D = new size_t*[m_depth];
@@ -27,13 +27,14 @@ public:
 
         for (int i = 0; i < m_depth; ++i)
         {
-            m_permutations1D = new size_t[m_sampleCount];
-            m_permutations2D = new size_t[m_sampleCount];
+            m_permutations1D[i] = new size_t[m_sampleCount];
+            m_permutations2D[i] = new size_t[m_sampleCount];
         }
 
         m_invResolution = 1.0f / (float)m_resolution;
         m_invResolutionSquare = 1.0f / (float) m_sampleCount;
         m_random = new Random();
+        m_sampleIndex = 0;
     }
 
     virtual ~StratifiedSampler()
@@ -63,7 +64,7 @@ public:
         for (int i = 0; i < m_depth; ++i)
         {
             cloned->m_permutations1D[i] = new size_t[m_sampleCount];
-            cloned->m_permutations1D[i] = new size_t[m_sampleCount];
+            cloned->m_permutations2D[i] = new size_t[m_sampleCount];
         }
         return cloned;
     }
@@ -73,26 +74,60 @@ public:
         for (int i = 0; i < m_depth; ++i)
         {
             for (size_t j = 0; j < m_sampleCount; ++j)
+            {
                 m_permutations1D[i][j] = j;
-            m_random->shuffle()
+                m_permutations2D[i][j] = j;
+            }
+            m_random->shuffle(m_permutations1D[i], m_sampleCount);
+            m_random->shuffle(m_permutations2D[i], m_sampleCount);
         }
+
+        m_sampleIndex = 0;
+        m_sampleDepth1D = m_sampleDepth2D = 0;
     }
 
-    void advance() {}
+    void advance()
+    {
+        m_sampleIndex++;
+        m_sampleDepth1D = m_sampleDepth2D = 0;
+    }
 
     float next1D()
     {
+        assert (m_sampleIndex < m_sampleCount);
+        if (m_sampleDepth1D < m_depth)
+        {
+            int k = m_permutations1D[m_sampleDepth1D++][m_sampleIndex];
+            return (k + m_random->nextFloat()) * m_invResolutionSquare;
+        }
         return m_random->nextFloat();
     }
 
     Point2f next2D()
     {
+        assert (m_sampleIndex < m_sampleCount);
+        if (m_sampleDepth2D < m_depth)
+        {
+            int k = m_permutations2D[m_sampleDepth2D++][m_sampleIndex];
+            int x = k % m_resolution;
+            int y = k / m_resolution;
+            return Point2f(
+                        (x + m_random->nextFloat()) * m_invResolution,
+                        (y + m_random->nextFloat()) * m_invResolution);
+        }
         return Point2f(m_random->nextFloat(), m_random->nextFloat());
     }
 
     std::string toString() const
     {
-        return std::string(formatString("StratifiedSampler[sampleCount=%d]", m_sampleCount));
+        std::ostringstream oss;
+        oss << "StratifiedSampler[" << std::endl
+            << "  resolution = " << m_resolution << "," << std::endl
+            << "  sampleCount = " << m_sampleCount << "," << std::endl
+            << "  sampleDepth = " << m_depth << "," << std::endl
+            << "  sampleIndex = " << m_sampleIndex << "," << std::endl
+            << "]";
+        return oss.str();
     }
 
 protected:
@@ -110,4 +145,3 @@ protected:
 WISP_REGISTER_CLASS(StratifiedSampler, "stratified")
 
 WISP_NAMESPACE_END
-*/

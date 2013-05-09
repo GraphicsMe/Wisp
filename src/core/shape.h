@@ -45,7 +45,7 @@ public:
     virtual bool canIntersect() const { return true; }
     virtual void refine(std::vector<ShapePtr>&) const { throw WispException("Unimplemented Shape::refine() method called"); }
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const = 0;
+    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const { throw WispException("Unimplemented Shape::samplePosition() method called"); }
     virtual bool rayIntersect(const TRay& ray) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
     virtual bool rayIntersect(const TRay& ray, Intersection& its) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const = 0;

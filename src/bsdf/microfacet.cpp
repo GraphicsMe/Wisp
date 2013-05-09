@@ -14,21 +14,21 @@ public:
     {
     }
 
-    Color3f sample_f(const Vector3f& wo, Vector3f& wi, const Point2f&) const
+    Color3f sample_f(BSDFQueryRecord& bRec, const Point2f&) const
     {
-        if (Frame::cosTheta(wo) <= 0)
+        if (Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
-        wi = Color3f(-wo.x, -wo.y, wo.z);
         return Color3f(1.0f);
     }
 
-    Color3f f(const Vector3f& wo, const Vector3f& wi) const
+    Color3f f(const BSDFQueryRecord& bRec) const
     {
         return Color3f(0.0f);
     }
 
-    float pdf(const Vector3f& wo, const Vector3f& wi) const
+    float pdf(const BSDFQueryRecord& bRec) const
     {
+        assert (0);
         return 0.0f;
     }
 
