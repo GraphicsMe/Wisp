@@ -29,8 +29,10 @@ public:
     bool rayIntersect(const TRay& ray) const;
     bool rayIntersect(const TRay& ray, Intersection& its) const;
 
-    AreaLight* getAreaLight() const { return m_areaLight; }
-    void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }
+    //AreaLight* getAreaLight() const { return m_areaLight; }
+    //void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }
+    // light related
+    void sampleLight(Point3f& p, const Point2f& sample);
 
     EClassType getClassType() const { return EScene; }
     std::string toString() const;
@@ -43,7 +45,8 @@ private:
     Integrator* m_integrator;
     std::vector<Shape*> m_shapes;
     Shape* m_aggregate;
-    AreaLight* m_areaLight;
+    //AreaLight* m_areaLight;
+    std::vector<Light*> m_lights;
 };
 
 WISP_NAMESPACE_END

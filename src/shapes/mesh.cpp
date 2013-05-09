@@ -39,12 +39,12 @@ public:
     friend class TriangleMesh;
     friend class WavefrontOBJ;
 
-    Triangle(uint32_t index, TriangleMesh* pMesh, BSDF* pBSDF, AreaLight* pAreaLight)
+    Triangle(uint32_t index, TriangleMesh* pMesh, BSDF* pBSDF, Light* pLight)
         : m_pMesh(pMesh)
         , m_index(&pMesh->m_vertexIndex[3*index])
     {
         m_bsdf = pBSDF;
-        m_areaLight = pAreaLight;
+        m_light = pLight;
     }
 
     ~Triangle()
@@ -360,8 +360,7 @@ public:
             m_bsdf = static_cast<BSDF*>(pChild);
             break;
         case ELuminaire:
-            m_areaLight = static_cast<AreaLight*>(pChild);
-            m_areaLight->setShape(this);
+            m_light = static_cast<Light*>(pChild);
             break;
 
         default:
@@ -376,8 +375,7 @@ public:
             m_bsdf = static_cast<BSDF*>(ObjectFactory::createInstance("diffuse", ParamSet()));
         for (size_t i = 0; i < m_triangleCount; ++i)
         {
-            AreaLight* pAreaLight = const_cast<AreaLight*>(this->getAreaLight());
-            Triangle* pTri = new Triangle(i, this, m_bsdf, pAreaLight);
+            Triangle* pTri = new Triangle(i, this, m_bsdf, m_light);
             m_bound.expand(pTri->getBoundingBox());
             m_triangles.push_back(ShapePtr(pTri));
         }

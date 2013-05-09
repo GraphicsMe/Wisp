@@ -11,7 +11,6 @@ Scene::Scene(const ParamSet &)
     , m_integrator(NULL)
     , m_rendering(false)
     , m_aggregate(NULL)
-    , m_areaLight(NULL)
 {
 
 }
@@ -46,12 +45,9 @@ void Scene::addChild(Object *obj)
     case EShape:
     case EMesh:
         {
-            Shape* shape = dynamic_cast<Shape*>(obj);
-            if (shape->getAreaLight() != NULL)
-            {
-                assert (m_areaLight == NULL);
-                m_areaLight = const_cast<AreaLight*>(shape->getAreaLight());
-            }
+            Shape* shape = static_cast<Shape*>(obj);
+            if (shape->isLight())
+                m_lights.push_back(shape->getLight());
             m_shapes.push_back(shape);
             m_bound.expand(shape->getBoundingBox());
         }
@@ -59,7 +55,7 @@ void Scene::addChild(Object *obj)
 
     case EAccelerator:
         {
-            m_aggregate = dynamic_cast<Shape*>(obj);
+            m_aggregate = static_cast<Shape*>(obj);
         }
         break;
 
@@ -67,7 +63,7 @@ void Scene::addChild(Object *obj)
         {
             if (m_sampler)
                 throw WispException("There can only be one sampler per scene!");
-            m_sampler = dynamic_cast<Sampler*>(obj);
+            m_sampler = static_cast<Sampler*>(obj);
         }
         break;
 
@@ -75,7 +71,7 @@ void Scene::addChild(Object *obj)
         {
             if (m_camera)
                 throw WispException("There can only be one camera per scene!");
-            m_camera = dynamic_cast<Camera*>(obj);
+            m_camera = static_cast<Camera*>(obj);
         }
         break;
 
@@ -83,7 +79,7 @@ void Scene::addChild(Object *obj)
         {
             if (m_integrator)
                 throw WispException("There can only be one intetrator per scene!");
-            m_integrator = dynamic_cast<Integrator*>(obj);
+            m_integrator = static_cast<Integrator*>(obj);
         }
         break;
 

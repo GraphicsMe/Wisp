@@ -37,7 +37,7 @@ class Shape : public Object
 public:
     typedef Shape* ShapePtr;
     
-    Shape() : m_bsdf(NULL),m_areaLight(NULL) {}
+    Shape() : m_bsdf(NULL),m_light(NULL) {}
 	virtual ~Shape() {}
 
     virtual float area() const = 0;
@@ -52,7 +52,9 @@ public:
 
     virtual BBox getBoundingBox() const = 0;
     const BSDF* getBSDF() const { return m_bsdf; }
-    const AreaLight* getAreaLight() const { return m_areaLight; }
+    inline bool isLight() const { return m_light != NULL; }
+    Light* getLight() { return m_light; }
+    const Light* getLight() const { return m_light; }
     const std::string& getName() const { return m_name; }
 
     EClassType getClassType() const { return EShape; }
@@ -74,7 +76,7 @@ public:
 
 protected:
     BSDF* m_bsdf;
-    AreaLight* m_areaLight;
+    Light* m_light;
     std::string m_name;
 };
 

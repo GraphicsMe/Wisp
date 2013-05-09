@@ -4,6 +4,13 @@
 #include "object.h"
 
 WISP_NAMESPACE_BEGIN
+
+struct LightSamplingRecord
+{
+    inline LightSamplingRecord() : m_light(NULL) {}
+    inline LightSamplingRecord(const )
+};
+
 class Light : public Object
 {
 public:
@@ -14,6 +21,7 @@ public:
     EClassType getClassType() const { return ELuminaire; }
 };
 
+/*
 class AreaLight : public Light
 {
 public:
@@ -32,6 +40,7 @@ private:
     Color3f m_radiance;
     Shape* m_shape;
 };
+*/
 
 WISP_NAMESPACE_END
 
