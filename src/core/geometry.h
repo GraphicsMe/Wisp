@@ -23,16 +23,21 @@ public:
         , d(d)
         , mint(Epsilon)
         , maxt(Infinity)
-    {
-    }
+    {}
+
+    inline TRay(const Point3f& o, const Vector3f& d, float mint)
+        : o(o)
+        , d(d)
+        , mint(mint)
+        , maxt(Infinity)
+    {}
 
     inline TRay(const Point3f &o, const Vector3f &d, float mint, float maxt)
         : o(o)
         , d(d)
         , mint(mint)
         , maxt(maxt)
-    {
-    }
+    {}
 
     inline TRay(const TRay& ray)
         : o(ray.o)

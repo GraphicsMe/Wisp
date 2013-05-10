@@ -4,14 +4,13 @@
 #include "object.h"
 #include "frame.h"
 #include "geometry.h"
-#include "bsdf.h"
-#include "light.h"
-
 WISP_NAMESPACE_BEGIN
 
-struct Intersection
+class Intersection
 {
+public:
     Point3f p;
+    Vector3f wo; // local frame
     float t;
     Color3f color;
     Point2f uv;
@@ -29,9 +28,23 @@ struct Intersection
     {
         return shFrame.toWorld(d);
     }
+
+    const BSDF* getBSDF() const;
+    Color3f Le(const Vector3f& dir) const;
 };
 
-class AreaLight;
+struct ShapeSamplingRecord
+{
+    Point3f p;
+    Normal3f n;
+
+    inline ShapeSamplingRecord() {}
+    inline ShapeSamplingRecord(const Point3f& p, const Normal3f& n)
+        : p(p), n(n) {}
+    inline ShapeSamplingRecord(const Intersection& its)
+        : p(its.p), n(its.geoFrame.n) {}
+};
+
 class Shape : public Object
 {
 public:
@@ -43,11 +56,17 @@ public:
     virtual float area() const = 0;
     virtual float pdf() const = 0;
     virtual bool canIntersect() const { return true; }
-    virtual void refine(std::vector<ShapePtr>&) const { throw WispException("Unimplemented Shape::refine() method called"); }
+    virtual void refine(std::vector<ShapePtr>&) const;
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const { throw WispException("Unimplemented Shape::samplePosition() method called"); }
-    virtual bool rayIntersect(const TRay& ray) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
-    virtual bool rayIntersect(const TRay& ray, Intersection& its) { throw WispException("Unimplemented Shape::rayIntersect() method called"); }
+
+    virtual float sampleArea(ShapeSamplingRecord& sRec, const Point2f& sample) const;
+    virtual float sampleSolidAngle(ShapeSamplingRecord& sRec,const Point3f& x, const Point2f sample) const;    
+    virtual float pdfArea(const ShapeSamplingRecord &sRec) const;
+    virtual float pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &x) const;
+
+    //virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const;
+    virtual bool rayIntersect(const TRay& ray);
+    virtual bool rayIntersect(const TRay& ray, Intersection& its);
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const = 0;
 
     virtual BBox getBoundingBox() const = 0;
@@ -58,21 +77,7 @@ public:
     const std::string& getName() const { return m_name; }
 
     EClassType getClassType() const { return EShape; }
-
-    void fullyRefine(std::vector<ShapePtr> &refined) const
-	{
-        std::vector<ShapePtr> todo;
-        todo.push_back(ShapePtr(this));
-        while (todo.size())
-        {
-            ShapePtr prim = todo.back();
-			todo.pop_back();
-			if (prim->canIntersect())
-				refined.push_back(prim);
-			else
-				prim->refine(todo);
-		}
-	}
+    void fullyRefine(std::vector<ShapePtr> &refined) const;
 
 protected:
     BSDF* m_bsdf;

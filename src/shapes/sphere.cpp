@@ -27,12 +27,12 @@ public:
         return 1.0f / area();
     }
 
-    virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
+    /*virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
     {
         Vector3f dir = uniformSphere(sample.x, sample.y);
         p = m_center + m_radius * dir;
         n = dir;
-    }
+    }*/
 
     virtual bool rayIntersect(const TRay& ray)
     {
@@ -84,6 +84,7 @@ public:
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(its.p-m_center));
         its.shFrame = its.geoFrame;
+        its.wo = its.toLocal(-ray.d);
 
         return true;
     }

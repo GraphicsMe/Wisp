@@ -28,14 +28,16 @@ Scene::~Scene()
 void Scene::prepare()
 {
     if (m_aggregate == NULL)
-    {
-        ParamSet param;
-        Object* obj = ObjectFactory::createInstance("kdtree", param);
-        m_aggregate = static_cast<Shape*>(obj);
-    }
+        m_aggregate = static_cast<Shape*>(ObjectFactory::createInstance("kdtree", ParamSet()));
+
     for (size_t i = 0; i < m_shapes.size(); ++i)
         m_aggregate->addChild(m_shapes[i]);
     m_aggregate->prepare();
+
+    for (size_t i = 0; i < m_lights.size(); ++i)
+        m_lightPDf.append(1.f);
+    m_lightPDf.normalize();
+
 }
 
 void Scene::addChild(Object *obj)
@@ -97,6 +99,38 @@ bool Scene::rayIntersect(const TRay& ray) const
 bool Scene::rayIntersect(const TRay& ray, Intersection& its) const
 {
     return m_aggregate->rayIntersect(ray, its);
+}
+
+float Scene::pdfLight(const Point3f& p, LightSamplingRecord& lRec) const
+{
+    const Light* light = lRec.light;
+    float fraction = m_lightPDf.getNormalization();
+    return light->pdf(p, lRec) * fraction;
+}
+
+bool Scene::sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& s, float epsilon) const
+{
+    Point2f sample(s);
+    float lumPdf;
+    size_t index = m_lightPDf.sampleReuse(sample.x, lumPdf);
+    assert (lumPdf == 1.0f);
+    Light* light = m_lights[index];
+    if (!light)
+        throw WispException(formatString("index: %d", index));
+    light->sample_f(p, lRec, sample);
+    if (lRec.pdf == 0.f)
+        return false;
+
+    Vector3f dir = lRec.sRec.p - p;
+    float length = glm::length(dir);
+    TRay ray(p, dir/length, epsilon, length*(1.0f - ShadowEpsilon));
+    if (this->rayIntersect(ray))
+        return false;
+
+    lRec.pdf *= lumPdf;
+    lRec.value /= lRec.pdf;
+    lRec.light = light;
+    return true;
 }
 
 std::string Scene::toString() const

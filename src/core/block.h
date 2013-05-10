@@ -68,7 +68,6 @@ protected:
     std::mutex m_mutex;
 };
 
-class Timer;
 class BlockRenderThread
 {
 public:

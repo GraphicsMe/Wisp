@@ -17,7 +17,7 @@ MainWindow::MainWindow(ImageBlock* output, Scene* scene, QWidget *parent) :
     this->setCentralWidget(m_glView);
 
     m_refreshTimer = new QTimer(this);
-    m_refreshTimer->setInterval(2000);
+    m_refreshTimer->setInterval(1500);
 
     connect(m_refreshTimer, SIGNAL(timeout()), this, SLOT(refresh()));
     connect(ui->actionStop, SIGNAL(triggered()), this, SLOT(stop()));

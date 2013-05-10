@@ -21,7 +21,14 @@ public:
         return Color3f(1.0f);
     }
 
-    Color3f f(const BSDFQueryRecord& bRec) const
+    Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f&) const
+    {
+        if (Frame::cosTheta(bRec.wo) <= 0)
+            return Color3f(0.0f);
+        return Color3f(1.0f);
+    }
+
+    Color3f eval(const BSDFQueryRecord& bRec) const
     {
         return Color3f(0.0f);
     }

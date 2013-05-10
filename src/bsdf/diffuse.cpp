@@ -17,12 +17,26 @@ public:
 
     Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const
     {
+        if (Frame::cosTheta(bRec.wo) <= 0.f)
+            return Color3f(0.f);
         bRec.wi = cosineHemisphere(sample.x, sample.y);
         return m_albedo;
     }
 
-    Color3f f(const BSDFQueryRecord& bRec) const
+    virtual Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f& sample) const
     {
+        if (Frame::cosTheta(bRec.wo) <= 0.f)
+            return Color3f(0.f);
+
+        bRec.wi = cosineHemisphere(sample.x, sample.y);
+        pdf = Frame::cosTheta(bRec.wi) * INV_PI;
+        return m_albedo;
+    }
+
+    Color3f eval(const BSDFQueryRecord& bRec) const
+    {
+        if (Frame::cosTheta(bRec.wi) <= 0 || Frame::cosTheta(bRec.wo) <= 0)
+            return Color3f(0.0f);
         return m_albedo * INV_PI;
     }
 

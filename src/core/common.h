@@ -28,6 +28,7 @@
 #define INV_TWOPI (0.5f/M_PI)
 #define INV_FOURPI (0.25/M_PI)
 #define Epsilon 1e-3f
+#define ShadowEpsilon 1e-3f
 const float Infinity = std::numeric_limits<float>::infinity();
 
 #include <glm/glm.hpp>
@@ -84,7 +85,11 @@ class Shape;
 class Sphere;
 class TRay;
 class Transform;
-
+class Light;
+class Timer;
+class TRay;
+class BBox;
+class Intersection;
 
 class WispException
 {
@@ -183,13 +188,20 @@ inline int float2Int(float val)
     return (int) val;
 }
 
+inline bool isValid(float v)
+{
+    if (v < 0 || _isnan(v) || !_finite(v))
+        return false;
+    return true;
+}
+
 inline bool isValid(Color3f col)
 {
-    if (col.x < 0 ||_isnan(col.x) || !_finite(col.x))
+    if (col.x < 0 || _isnan(col.x) || !_finite(col.x))
         return false;
-    if (col.y < 0 ||_isnan(col.y) || !_finite(col.y))
+    if (col.y < 0 || _isnan(col.y) || !_finite(col.y))
         return false;
-    if (col.z < 0 ||_isnan(col.z) || !_finite(col.z))
+    if (col.z < 0 || _isnan(col.z) || !_finite(col.z))
         return false;
     return true;
 }
@@ -201,6 +213,26 @@ inline float powerHeuristic(int nf, float fPdf, int ng, float gPdf)
     return ff / (ff + g*g);
 }
 
+inline float vectorMin(Vector3f v)
+{
+    float min = v.x;
+    if (v.y < min) min = v.y;
+    if (v.z < min) min = v.z;
+    return min;
+}
+
+inline float vectorMax(Vector3f v)
+{
+    float max = v.x;
+    if (v.y > max) max = v.y;
+    if (v.z > max) max = v.z;
+    return max;
+}
+
+inline float isZero(Vector3f v)
+{
+    return v.x == 0.f && v.y == 0.f && v.z == 0.f;
+}
 
 extern std::string formatString(const char *fmt, ...);
 

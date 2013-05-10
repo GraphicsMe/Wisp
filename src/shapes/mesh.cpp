@@ -1,5 +1,6 @@
 #include "shape.h"
 #include "scene.h"
+#include "bsdf.h"
 #include "distribution1D.h"
 #include <fstream>
 #include <sstream>
@@ -141,8 +142,32 @@ public:
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(glm::cross(e1, e2)));
         its.shFrame = its.geoFrame;
+        its.wo = its.toLocal(-ray.d);
 
         return true;
+    }
+
+    Point3f sample(Normal3f& normal, const Point2f& sample) const
+    {
+        Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
+        Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];
+        Point3f p3 = m_pMesh->m_vertexPositions[m_index[2]];
+        Vector3f e1 = p2 - p1;
+        Vector3f e2 = p3 - p1;
+
+        Point2f b = uniformTriangle(sample.x, sample.y);
+        Point3f p = p1 + e1 * b.x + e2 * b.y;
+
+        if (m_pMesh->m_vertexNormals)
+        {
+            Normal3f n0 = m_pMesh->m_vertexNormals[m_index[0]];
+            Normal3f n1 = m_pMesh->m_vertexNormals[m_index[1]];
+            Normal3f n2 = m_pMesh->m_vertexNormals[m_index[2]];
+            normal = glm::normalize(n0 * (1.0f - b.x - b.y) + n1 * b.x + n2 * b.y);
+        }
+        else
+            normal = glm::normalize(glm::cross(e1, e2));
+        return p;
     }
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
@@ -295,6 +320,11 @@ public:
         return m_distr.getNormalization();
     }
 
+    float pdfArea(const ShapeSamplingRecord &) const
+    {
+        return m_distr.getNormalization();
+    }
+
     virtual void refine(std::vector<ShapePtr>& refined) const
     {
         for (size_t i = 0; i < m_triangles.size(); ++i)
@@ -303,7 +333,15 @@ public:
         }
     }
 
-    virtual void samplePosition(const Point2f& _sample, Point3f& p, Normal3f& n) const
+    virtual float sampleArea(ShapeSamplingRecord &sRec, const Point2f &_sample) const
+    {
+        Point2f sample(_sample);
+        int index = m_distr.sampleReuse(sample.y);
+        sRec.p = m_triangles[index]->sample(sRec.n, sample);
+        return m_distr.getNormalization();
+    }
+
+    /*virtual void samplePosition(const Point2f& _sample, Point3f& p, Normal3f& n) const
     {
         Point2f sample(_sample);
         size_t index = m_distr.sampleReuse(sample.x);
@@ -324,7 +362,7 @@ public:
         }
         else
             n = glm::normalize(glm::cross(p1-p0, p2-p0));
-    }
+    }*/
 
     virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
     {
@@ -377,7 +415,7 @@ public:
         {
             Triangle* pTri = new Triangle(i, this, m_bsdf, m_light);
             m_bound.expand(pTri->getBoundingBox());
-            m_triangles.push_back(ShapePtr(pTri));
+            m_triangles.push_back(pTri);
         }
 
         m_distr.clear();
@@ -423,7 +461,7 @@ protected:
 
     typedef std::unordered_map<OBJVertex, int, OBJVertexHash> VertexMap;
     //typedef std::shared_ptr<Triangle> TrianglePtr;
-    std::vector<ShapePtr> m_triangles;
+    std::vector<Triangle*> m_triangles;
 	Color3f m_diffuse;
     BBox m_bound;
     Distribution1D m_distr;

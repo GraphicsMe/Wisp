@@ -44,7 +44,8 @@ SOURCES += \
     src/core/timer.cpp \
     src/samplers/stratified.cpp \
     src/phase/isotropic.cpp \
-    src/integrators/mipath.cpp
+    src/integrators/mipath.cpp \
+    src/core/shape.cpp
 
 
 HEADERS  += \

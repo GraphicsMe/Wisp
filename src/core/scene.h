@@ -6,6 +6,7 @@
 #include "shape.h"
 #include "geometry.h"
 #include "light.h"
+#include "distribution1D.h"
 
 WISP_NAMESPACE_BEGIN
 class Scene : public Object
@@ -32,7 +33,8 @@ public:
     //AreaLight* getAreaLight() const { return m_areaLight; }
     //void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }
     // light related
-    void sampleLight(Point3f& p, const Point2f& sample);
+    float pdfLight(const Point3f& p, LightSamplingRecord& lRec) const;
+    bool sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
 
     EClassType getClassType() const { return EScene; }
     std::string toString() const;
@@ -47,6 +49,7 @@ private:
     Shape* m_aggregate;
     //AreaLight* m_areaLight;
     std::vector<Light*> m_lights;
+    Distribution1D m_lightPDf;
 };
 
 WISP_NAMESPACE_END
