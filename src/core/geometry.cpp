@@ -27,7 +27,7 @@ BBox merge(const BBox& b1, const BBox& b2)
     return ret;
 }
 
-bool BBox::rayIntersect(const TRay& ray, float& tt0, float& tt1)
+bool BBox::rayIntersect(const Ray& ray, float& tt0, float& tt1)
 {
     float t0 = ray.mint, t1 = ray.maxt;
 

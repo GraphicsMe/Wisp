@@ -69,7 +69,7 @@ public:
         return 1.0f / area();
     }
 
-    virtual bool rayIntersect(const TRay& ray)
+    virtual bool rayIntersect(const Ray& ray)
     {
         Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
         Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];
@@ -103,7 +103,7 @@ public:
         return true;
     }
 
-    virtual bool rayIntersect(const TRay& ray, Intersection& its)
+    virtual bool rayIntersect(const Ray& ray, Intersection& its)
     {
         Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
         Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];

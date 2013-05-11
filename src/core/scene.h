@@ -27,8 +27,8 @@ public:
 
     void prepare();
     void addChild(Object *obj);
-    bool rayIntersect(const TRay& ray) const;
-    bool rayIntersect(const TRay& ray, Intersection& its) const;
+    bool rayIntersect(const Ray& ray) const;
+    bool rayIntersect(const Ray& ray, Intersection& its) const;
 
     //AreaLight* getAreaLight() const { return m_areaLight; }
     //void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }

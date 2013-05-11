@@ -9,7 +9,7 @@ class Camera : public Object
 public:
     virtual float generateRay(const Point2f& sample,
                               const Point2f& lensSample,
-                              TRay& ray) const = 0;
+                              Ray& ray) const = 0;
     inline const Vector2i& getOutputSize() const { return m_outputSize; }
     inline const Filter* getFilter() const { return m_filter; }
 

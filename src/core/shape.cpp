@@ -33,12 +33,12 @@ void Shape::fullyRefine(std::vector<ShapePtr> &refined) const
     }
 }
 
-bool Shape::rayIntersect(const TRay&)
+bool Shape::rayIntersect(const Ray&)
 {
     throw WispException("Unimplemented Shape::rayIntersect() method called");
 }
 
-bool Shape::rayIntersect(const TRay&, Intersection&)
+bool Shape::rayIntersect(const Ray&, Intersection&)
 {
     throw WispException("Unimplemented Shape::rayIntersect() method called");
 }

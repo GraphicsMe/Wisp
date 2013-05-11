@@ -22,7 +22,7 @@ public:
         m_primitives.push_back(ShapePtr(shape));
     }
 
-    virtual bool rayIntersect(const TRay& ray, Intersection& its)
+    virtual bool rayIntersect(const Ray& ray, Intersection& its)
     {
         ray;
         its;

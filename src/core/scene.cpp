@@ -91,12 +91,12 @@ void Scene::addChild(Object *obj)
     }
 }
 
-bool Scene::rayIntersect(const TRay& ray) const
+bool Scene::rayIntersect(const Ray& ray) const
 {
     return m_aggregate->rayIntersect(ray);
 }
 
-bool Scene::rayIntersect(const TRay& ray, Intersection& its) const
+bool Scene::rayIntersect(const Ray& ray, Intersection& its) const
 {
     return m_aggregate->rayIntersect(ray, its);
 }
@@ -123,7 +123,7 @@ bool Scene::sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& s,
 
     Vector3f dir = lRec.sRec.p - p;
     float length = glm::length(dir);
-    TRay ray(p, dir/length, epsilon, length*(1.0f - ShadowEpsilon));
+    Ray ray(p, dir/length, epsilon, length*(1.0f - ShadowEpsilon));
     if (this->rayIntersect(ray))
         return false;
 

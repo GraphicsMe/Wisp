@@ -37,7 +37,7 @@ public:
             m_filter = dynamic_cast<Filter*>(ObjectFactory::createInstance("box", ParamSet()));
     }
 
-    float generateRay(const Point2f &sample, const Point2f &lensSample, TRay &ray) const
+    float generateRay(const Point2f &sample, const Point2f &lensSample, Ray &ray) const
     {
         Point2f diskP = concentricDisk(lensSample.x, lensSample.y) * m_lensRadius;
         Point3f lensP(diskP.x, diskP.y, 0.f);

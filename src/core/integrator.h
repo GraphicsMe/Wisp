@@ -9,7 +9,7 @@ class Integrator : public Object
 public:
     virtual ~Integrator() {}
 
-    virtual Color3f Li(const Scene* scene, Sampler* sampler, const TRay& ray) const = 0;
+    virtual Color3f Li(const Scene* scene, Sampler* sampler, const Ray& ray) const = 0;
 
     EClassType getClassType() const { return EIntegrator; }
 };

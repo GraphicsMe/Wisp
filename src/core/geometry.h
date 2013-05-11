@@ -4,7 +4,7 @@
 #include "common.h"
 
 WISP_NAMESPACE_BEGIN
-class TRay
+class Ray
 {
 public:
     Point3f o;
@@ -13,33 +13,33 @@ public:
     float mint;
     mutable float maxt;
 
-    inline TRay()
+    inline Ray()
         : mint(Epsilon)
         , maxt(Infinity)
     {}
 
-    inline TRay(const Point3f& o, const Vector3f& d)
+    inline Ray(const Point3f& o, const Vector3f& d)
         : o(o)
         , d(d)
         , mint(Epsilon)
         , maxt(Infinity)
     {}
 
-    inline TRay(const Point3f& o, const Vector3f& d, float mint)
+    inline Ray(const Point3f& o, const Vector3f& d, float mint)
         : o(o)
         , d(d)
         , mint(mint)
         , maxt(Infinity)
     {}
 
-    inline TRay(const Point3f &o, const Vector3f &d, float mint, float maxt)
+    inline Ray(const Point3f &o, const Vector3f &d, float mint, float maxt)
         : o(o)
         , d(d)
         , mint(mint)
         , maxt(maxt)
     {}
 
-    inline TRay(const TRay& ray)
+    inline Ray(const Ray& ray)
         : o(ray.o)
         , d(ray.d)
         , dRcp(ray.dRcp)
@@ -47,7 +47,7 @@ public:
         , maxt(ray.maxt)
     {}
 
-    inline TRay(const TRay& ray, float mint, float maxt)
+    inline Ray(const Ray& ray, float mint, float maxt)
         : o(ray.o)
         , d(ray.d)
         , dRcp(ray.dRcp)
@@ -57,9 +57,9 @@ public:
 
     inline Point3f operator() (float t) const { return o+t*d; }
 
-    inline TRay reverse() const
+    inline Ray reverse() const
     {
-        TRay result(*this);
+        Ray result(*this);
         result.d = -this->d;
         result.dRcp = -this->dRcp;
     }
@@ -87,7 +87,7 @@ public:
     friend BBox merge(const BBox& b, const Point3f& p);
     friend BBox merge(const BBox& b1, const BBox& b2);
 
-    bool rayIntersect(const TRay& ray, float& t0, float& t1);
+    bool rayIntersect(const Ray& ray, float& t0, float& t1);
 
     bool overLaps(const BBox& b) const
     {

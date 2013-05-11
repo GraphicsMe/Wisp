@@ -241,7 +241,7 @@ void BlockRenderThread::operator()()
                         Point2f pixelSample = Point2f(offset.x + x, offset.y + y)
                                 + m_sampler->next2D();
                         Point2f lensSample = m_sampler->next2D();
-                        TRay ray;
+                        Ray ray;
                         float weight = camera->generateRay(pixelSample, lensSample, ray);
                         Color3f radiance = integrator->Li(m_scene, m_sampler, ray);
                         block.put(pixelSample, weight*radiance);

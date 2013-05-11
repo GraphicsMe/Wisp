@@ -14,10 +14,10 @@ public:
         m_maxDepth = paramSet.getInteger("maxDepth", 10);
     }
 
-    Color3f Li(const Scene *scene, Sampler *sampler, const TRay &r) const
+    Color3f Li(const Scene *scene, Sampler *sampler, const Ray &r) const
     {
         Color3f pathThrough(1.f), L(0.f);
-        TRay ray(r);
+        Ray ray(r);
         for (int depth = 0; depth < m_maxDepth; ++depth)
         {
             Intersection its;
@@ -50,7 +50,7 @@ public:
                 break;
 
             Vector3f wi = its.toWorld(bRec.wi);
-            ray = TRay(its.p, wi, its.t*Epsilon);
+            ray = Ray(its.p, wi, its.t*Epsilon);
 
             if (scene->rayIntersect(ray, its) && its.shape->isLight())
             {

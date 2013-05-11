@@ -3,8 +3,8 @@
 <scene>
 	<integrator type="mipath"/>
 	
-	<sampler type="independent">
-		<integer name="sampleCount" value="128"/>
+	<sampler type="stratified">
+		<integer name="sampleCount" value="256"/>
 	</sampler>
 
 	<camera type="perspective">

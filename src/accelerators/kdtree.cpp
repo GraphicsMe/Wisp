@@ -150,7 +150,7 @@ public:
         return std::string("KdTreeAccel[]");
     }
 
-    bool rayIntersect(const TRay& ray)
+    bool rayIntersect(const Ray& ray)
     {
         float tmin, tmax;
         if (!m_bounds.rayIntersect(ray, tmin, tmax))
@@ -230,7 +230,7 @@ public:
         return hit;
     }
 
-    bool rayIntersect(const TRay& ray, Intersection& its)
+    bool rayIntersect(const Ray& ray, Intersection& its)
     {
         float tmin, tmax;
         if (!m_bounds.rayIntersect(ray, tmin, tmax))

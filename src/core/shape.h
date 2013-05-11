@@ -56,8 +56,8 @@ public:
     virtual void refine(std::vector<ShapePtr>&) const;
     void fullyRefine(std::vector<ShapePtr> &refined) const;
 
-    virtual bool rayIntersect(const TRay& ray);
-    virtual bool rayIntersect(const TRay& ray, Intersection& its);
+    virtual bool rayIntersect(const Ray& ray);
+    virtual bool rayIntersect(const Ray& ray, Intersection& its);
 
     virtual float area() const;
     virtual float pdfArea(const ShapeSamplingRecord &sRec) const;

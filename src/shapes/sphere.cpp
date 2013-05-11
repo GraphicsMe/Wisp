@@ -33,7 +33,7 @@ public:
         n = dir;
     }*/
 
-    virtual bool rayIntersect(const TRay& ray)
+    virtual bool rayIntersect(const Ray& ray)
     {
         Vector3f dir=ray.o-m_center;
         float a = glm::dot(ray.d, ray.d);
@@ -55,7 +55,7 @@ public:
         return true;
     }
 
-    virtual bool rayIntersect(const TRay& ray, Intersection& its)
+    virtual bool rayIntersect(const Ray& ray, Intersection& its)
     {
         Vector3f dir=ray.o-m_center;
         float a = glm::dot(ray.d, ray.d);

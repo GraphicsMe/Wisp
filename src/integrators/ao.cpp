@@ -13,7 +13,7 @@ public:
         m_length = paramSet.getFloat("length", 1.0f);
     }
 
-    Color3f Li(const Scene *scene, Sampler *sampler, const TRay &ray) const
+    Color3f Li(const Scene *scene, Sampler *sampler, const Ray &ray) const
     {
         Intersection its;
         if (!scene->rayIntersect(ray, its))
@@ -26,7 +26,7 @@ public:
 
         float length = m_length * glm::length(scene->getBoundingBox().getExtents());
 
-        TRay shadowRay(its.p, d, 1e-4f*its.t, length);
+        Ray shadowRay(its.p, d, 1e-4f*its.t, length);
 
         return Color3f(scene->rayIntersect(shadowRay) ? 0.0f : 1.0f);
     }

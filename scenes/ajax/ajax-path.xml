@@ -1,6 +1,6 @@
 <scene>
 	<!-- Independent sample generator, 32 samples per pixel -->
-	<sampler type="independent">
+	<sampler type="stratified">
 		<integer name="sampleCount" value="256"/>
 	</sampler>
 
@@ -27,8 +27,8 @@
 	<mesh type="obj">
 		<string name="filename" value="ajax.obj"/>
 
-		<bsdf type="microfacet">
-			<color name="kd" value="0.5, 0.4, 0.3"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.5, 0.4, 0.3"/>
 		</bsdf>
 	</mesh>
 

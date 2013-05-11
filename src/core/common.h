@@ -83,11 +83,11 @@ class PhaseFunction;
 class Medium;
 class Shape;
 class Sphere;
-class TRay;
+class Ray;
 class Transform;
 class Light;
 class Timer;
-class TRay;
+class Ray;
 class BBox;
 class Intersection;
 
