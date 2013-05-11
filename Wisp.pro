@@ -35,7 +35,6 @@ SOURCES += \
     src/shapes/mesh.cpp \
     src/accelerators/kdtree.cpp \
     src/accelerators/grid.cpp \
-    src/core/aggregate.cpp \
     src/bsdf/microfacet.cpp \
     src/bsdf/diffuse.cpp \
     src/bsdf/dielectric.cpp \
@@ -45,7 +44,8 @@ SOURCES += \
     src/samplers/stratified.cpp \
     src/phase/isotropic.cpp \
     src/integrators/mipath.cpp \
-    src/core/shape.cpp
+    src/core/shape.cpp \
+    src/core/light.cpp
 
 
 HEADERS  += \

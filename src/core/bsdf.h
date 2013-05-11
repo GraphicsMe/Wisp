@@ -21,8 +21,6 @@ struct BSDFQueryRecord
 class BSDF : public Object
 {
 public:
-    virtual ~BSDF() {}
-
     virtual float pdf(const BSDFQueryRecord& bRec) const = 0;
     virtual Color3f eval(const BSDFQueryRecord& bRec) const = 0;
     virtual Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const = 0;

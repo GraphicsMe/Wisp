@@ -4,17 +4,17 @@ WISP_NAMESPACE_BEGIN
 class Isotropic : public PhaseFucntion
 {
 public:
-    Isotropic(const ParamSet& paramSet)
+    Isotropic(const ParamSet&)
     {
 
     }
 
-    float eval (const PhaseFunctionQueryRecord &rec) const
+    float eval (const PhaseFunctionQueryRecord&) const
     {
         return INV_FOURPI;
     }
 
-    float pdf(const PhaseFunctionQueryRecord &rec) const
+    float pdf(const PhaseFunctionQueryRecord&) const
     {
         return INV_FOURPI;
     }

@@ -87,15 +87,6 @@ public:
         return true;
     }
 
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
-    {
-        its.p = ray(its.t);
-        its.uv = Point2f(1.0f, 1.0f);
-        its.shape = this;
-        its.geoFrame = Frame(glm::normalize(its.p-m_center));
-        its.shFrame = its.geoFrame;
-    }
-
     virtual BBox getBoundingBox() const
     {
         Vector3f off(m_radius, m_radius, m_radius);

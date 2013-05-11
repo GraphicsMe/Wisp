@@ -178,20 +178,6 @@ public:
         return p;
     }
 
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
-    {
-        Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
-        Point3f p2 = m_pMesh->m_vertexPositions[m_index[1]];
-        Point3f p3 = m_pMesh->m_vertexPositions[m_index[2]];
-        Vector3f e1 = p2 - p1;
-        Vector3f e2 = p3 - p1;
-        its.p = ray(its.t);
-        its.uv = Point2f(1.0f, 1.0f);
-        its.shape = this;
-        its.geoFrame = Frame(glm::normalize(glm::cross(e1, e2)));
-        its.shFrame = its.geoFrame;
-    }
-
     virtual BBox getBoundingBox() const
     {
         Point3f p1 = m_pMesh->m_vertexPositions[m_index[0]];
@@ -344,39 +330,6 @@ public:
         int index = m_distr.sampleReuse(sample.y);
         sRec.p = m_triangles[index]->sample(sRec.n, sample);
         return m_distr.getNormalization();
-    }
-
-    /*virtual void samplePosition(const Point2f& _sample, Point3f& p, Normal3f& n) const
-    {
-        Point2f sample(_sample);
-        size_t index = m_distr.sampleReuse(sample.x);
-
-        const Triangle* pTriangle = static_cast<const Triangle*>(m_triangles[index]);
-        Point3f p0 = m_vertexPositions[pTriangle->m_index[0]];
-        Point3f p1 = m_vertexPositions[pTriangle->m_index[1]];
-        Point3f p2 = m_vertexPositions[pTriangle->m_index[2]];
-        Point2f b = uniformTriangle(sample.x, sample.y);
-        p = p0 * (1.0f - b.x - b.y) + p1 * b.x + p2 * b.y;
-
-        if (m_vertexNormals)
-        {
-            Normal3f n0 = m_vertexNormals[pTriangle->m_index[0]];
-            Normal3f n1 = m_vertexNormals[pTriangle->m_index[1]];
-            Normal3f n2 = m_vertexNormals[pTriangle->m_index[2]];
-            n = glm::normalize(n0 * (1.0f - b.x - b.y) + n1 * b.x + n2 * b.y);
-        }
-        else
-            n = glm::normalize(glm::cross(p1-p0, p2-p0));
-    }*/
-
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
-    {
-        its.shape->fillIntersectionRecord(ray, its);
-        //its.p = ray(its.t);
-        //its.uv = Point2f(1.0f, 1.0f);
-        //its.shape = this;
-        //its.geoFrame = Frame(glm::normalize(its.p-m_center));
-        //its.shFrame = its.geoFrame;
     }
 
     virtual BBox getBoundingBox() const

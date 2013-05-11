@@ -26,12 +26,10 @@ struct LightSamplingRecord
 class Light : public Object
 {
 public:
-    virtual ~Light() {}
-
-    virtual Color3f Le(const Vector3f& dir) const { assert(0); return Color3f(0.f); }
-    virtual Color3f Le(const ShapeSamplingRecord& sRec, const Vector3f& dir) const { assert(0); return Color3f(0.f); }
-    virtual void sample_f(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample) const = 0;
-    virtual float pdf(const Point3f& p, const LightSamplingRecord& lRec) const { assert(0); return 0.f; }
+    virtual Color3f Le(const Vector3f& dir) const;
+    virtual Color3f Le(const ShapeSamplingRecord& sRec, const Vector3f& dir) const;
+    virtual float pdf(const Point3f& p, const LightSamplingRecord& lRec) const;
+    virtual void sample_f(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample) const;
 
     EClassType getClassType() const { return ELuminaire; }
 };

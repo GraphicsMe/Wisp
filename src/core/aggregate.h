@@ -7,9 +7,7 @@ WISP_NAMESPACE_BEGIN
 class Aggregate : public Shape
 {
 public:
-    Aggregate();
-
-    const BSDF* getBSDF() const;
+    Aggregate() {}
     EClassType getClassType() const { return EAccelerator; }
 
 protected:

@@ -15,16 +15,6 @@ public:
 
     }
 
-    virtual float area() const
-    {
-        return 1.0f;
-    }
-
-    virtual float pdf() const
-    {
-        return 0.0f;
-    }
-
     virtual void addChild(Object *pChild)
     {
         Shape* shape = static_cast<Shape*>(pChild);
@@ -34,11 +24,10 @@ public:
 
     virtual bool rayIntersect(const TRay& ray, Intersection& its)
     {
+        ray;
+        its;
+        assert (0);
         return false;
-    }
-
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
-    {
     }
 
     virtual BBox getBoundingBox() const
@@ -51,8 +40,7 @@ public:
         return std::string("GridAccel[]");
     }
 
-protected:
-    typedef std::shared_ptr<Shape> ShapePtr;
+private:
     std::vector<ShapePtr> m_primitives;
 };
 

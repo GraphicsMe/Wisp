@@ -3,26 +3,29 @@
 
 WISP_NAMESPACE_BEGIN
 
-class Mirror : public BSDF
+class Microfacet : public BSDF
 {
 public:
-    Mirror(const ParamSet&)
+    Microfacet(const ParamSet&)
     {
     }
 
-    ~Mirror()
+    Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const
     {
-    }
-
-    Color3f sample_f(BSDFQueryRecord& bRec, const Point2f&) const
-    {
+        bRec;
+        sample;
+        assert (0);
         if (Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
         return Color3f(1.0f);
     }
 
-    Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f&) const
+    Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f& sample) const
     {
+        pdf;
+        bRec;
+        sample;
+        assert (0);
         if (Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
         return Color3f(1.0f);
@@ -30,21 +33,24 @@ public:
 
     Color3f eval(const BSDFQueryRecord& bRec) const
     {
+        bRec;
+        assert (0);
         return Color3f(0.0f);
     }
 
     float pdf(const BSDFQueryRecord& bRec) const
     {
+        bRec;
         assert (0);
         return 0.0f;
     }
 
     std::string toString() const
     {
-        return std::string(formatString("Mirror[]"));
+        return std::string(formatString("Microfacet[]"));
     }
 };
 
-WISP_REGISTER_CLASS(Mirror, "mirror")
+WISP_REGISTER_CLASS(Microfacet, "microfacet")
 
 WISP_NAMESPACE_END

@@ -51,33 +51,32 @@ public:
     typedef Shape* ShapePtr;
     
     Shape() : m_bsdf(NULL),m_light(NULL) {}
-	virtual ~Shape() {}
 
-    virtual float area() const = 0;
-    virtual float pdf() const = 0;
     virtual bool canIntersect() const { return true; }
     virtual void refine(std::vector<ShapePtr>&) const;
+    void fullyRefine(std::vector<ShapePtr> &refined) const;
 
-
-    virtual float sampleArea(ShapeSamplingRecord& sRec, const Point2f& sample) const;
-    virtual float sampleSolidAngle(ShapeSamplingRecord& sRec,const Point3f& x, const Point2f sample) const;    
-    virtual float pdfArea(const ShapeSamplingRecord &sRec) const;
-    virtual float pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &x) const;
-
-    //virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const;
     virtual bool rayIntersect(const TRay& ray);
     virtual bool rayIntersect(const TRay& ray, Intersection& its);
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const = 0;
+
+    virtual float area() const;
+    virtual float pdfArea(const ShapeSamplingRecord &sRec) const;
+    virtual float sampleArea(ShapeSamplingRecord& sRec, const Point2f& sample) const;
+
+    virtual float pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &x) const;
+    virtual float sampleSolidAngle(ShapeSamplingRecord& sRec,const Point3f& x, const Point2f sample) const;    
 
     virtual BBox getBoundingBox() const = 0;
+
+    BSDF* getBSDF() { return m_bsdf; }
     const BSDF* getBSDF() const { return m_bsdf; }
-    inline bool isLight() const { return m_light != NULL; }
+    bool isLight() const { return m_light != NULL; }
     Light* getLight() { return m_light; }
     const Light* getLight() const { return m_light; }
     const std::string& getName() const { return m_name; }
 
+    // object related
     EClassType getClassType() const { return EShape; }
-    void fullyRefine(std::vector<ShapePtr> &refined) const;
 
 protected:
     BSDF* m_bsdf;

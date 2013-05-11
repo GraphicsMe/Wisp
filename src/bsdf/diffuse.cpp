@@ -11,10 +11,6 @@ public:
         m_albedo = paramSet.getColor("albedo", Color3f(0.5f));
     }
 
-    ~Diffuse()
-    {
-    }
-
     Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const
     {
         if (Frame::cosTheta(bRec.wo) <= 0.f)

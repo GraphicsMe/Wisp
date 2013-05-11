@@ -18,55 +18,6 @@ void Shape::refine(std::vector<ShapePtr>&) const
     throw WispException("Unimplemented Shape::refine() method called");
 }
 
-float Shape::sampleArea(ShapeSamplingRecord&, const Point2f&) const
-{
-    throw WispException("Unimplemented Shape::sampleArea() method called");
-}
-
-float Shape::sampleSolidAngle(ShapeSamplingRecord &sRec, const Point3f &from, const Point2f sample) const
-{
-    float pdfArea = this->sampleArea(sRec, sample);
-    Vector3f lumToPoint = from - sRec.p;
-    float distSqr = glm::dot(lumToPoint, lumToPoint);
-    float dp = glm::dot(lumToPoint, sRec.n);
-    if (dp > 0)
-        return pdfArea * distSqr * std::sqrt(distSqr) / dp;
-    else
-        return 0.0f;
-}
-
-float Shape::pdfArea(const ShapeSamplingRecord &) const
-{
-    throw WispException("Unimplemented Shape::pdfArea() method called");
-}
-
-float Shape::pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &from) const
-{
-    //float pdfArea = this->sampleArea(sRec, sample);
-    Vector3f lumToPoint = from - sRec.p;
-    float distSqr = glm::dot(lumToPoint, lumToPoint);
-    float dp = glm::dot(lumToPoint, sRec.n);
-    if (dp > 0)
-        return this->pdfArea(sRec) * distSqr * std::sqrt(distSqr) / dp;
-    else
-        return 0.0f;
-}
-
-/*void Shape::samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
-{
-    throw WispException("Unimplemented Shape::samplePosition() method called");
-}*/
-
-bool Shape::rayIntersect(const TRay& ray)
-{
-    throw WispException("Unimplemented Shape::rayIntersect() method called");
-}
-
-bool Shape::rayIntersect(const TRay& ray, Intersection& its)
-{
-    throw WispException("Unimplemented Shape::rayIntersect() method called");
-}
-
 void Shape::fullyRefine(std::vector<ShapePtr> &refined) const
 {
     std::vector<ShapePtr> todo;
@@ -82,4 +33,51 @@ void Shape::fullyRefine(std::vector<ShapePtr> &refined) const
     }
 }
 
+bool Shape::rayIntersect(const TRay&)
+{
+    throw WispException("Unimplemented Shape::rayIntersect() method called");
+}
+
+bool Shape::rayIntersect(const TRay&, Intersection&)
+{
+    throw WispException("Unimplemented Shape::rayIntersect() method called");
+}
+
+float Shape::area() const
+{
+    throw WispException("Unimplemented Shape::area() method called");
+}
+
+float Shape::sampleArea(ShapeSamplingRecord&, const Point2f&) const
+{
+    throw WispException("Unimplemented Shape::sampleArea() method called");
+}
+
+float Shape::pdfArea(const ShapeSamplingRecord &) const
+{
+    throw WispException("Unimplemented Shape::pdfArea() method called");
+}
+
+float Shape::sampleSolidAngle(ShapeSamplingRecord &sRec, const Point3f &from, const Point2f sample) const
+{
+    float pdfArea = this->sampleArea(sRec, sample);
+    Vector3f lumToPoint = from - sRec.p;
+    float distSqr = glm::dot(lumToPoint, lumToPoint);
+    float dp = glm::dot(lumToPoint, sRec.n);
+    if (dp > 0)
+        return pdfArea * distSqr * std::sqrt(distSqr) / dp;
+    else
+        return 0.0f;
+}
+
+float Shape::pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &from) const
+{
+    Vector3f lumToPoint = from - sRec.p;
+    float distSqr = glm::dot(lumToPoint, lumToPoint);
+    float dp = glm::dot(lumToPoint, sRec.n);
+    if (dp > 0)
+        return this->pdfArea(sRec) * distSqr * std::sqrt(distSqr) / dp;
+    else
+        return 0.0f;
+}
 WISP_NAMESPACE_END

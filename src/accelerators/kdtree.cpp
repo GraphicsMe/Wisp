@@ -128,41 +128,19 @@ public:
         delete[] prims1;
     }
 
-    virtual float area() const
-    {
-        return 1.0f;
-    }
-
-    virtual float pdf() const
-    {
-        return 0.0f;
-    }
-
 	bool canIntersect() const
 	{
 		return true;
 	}
 
-    virtual void addChild(Object *pChild)
+    void addChild(Object *pChild)
     {
         Shape* shape = static_cast<Shape*>(pChild);
         assert (shape != NULL);
         m_primitives.push_back(ShapePtr(shape));
     }
 
-    virtual void fillIntersectionRecord(const TRay& ray, Intersection& its) const
-    {
-		ray;
-		its;
-        //its.p = ray(its.t);
-        //its.uv = Point2f(1.0f, 1.0f);
-        //its.color = m_diffuse;
-        //its.shape = this;
-        //its.geoFrame = Frame(glm::normalize(its.p-m_center));
-        //its.shFrame = its.geoFrame;
-    }
-
-    virtual BBox getBoundingBox() const
+    BBox getBoundingBox() const
     {
         return m_bound;
     }
@@ -170,6 +148,177 @@ public:
     std::string toString() const
     {
         return std::string("KdTreeAccel[]");
+    }
+
+    bool rayIntersect(const TRay& ray)
+    {
+        float tmin, tmax;
+        if (!m_bounds.rayIntersect(ray, tmin, tmax))
+            return false;
+
+        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
+        KdToDo todo[MAX_TODO];
+        int todoPos = 0;
+        bool hit = false;
+        const KdAccelNode* node = &m_nodes[0];
+        while (node != NULL)
+        {
+            if (!node->IsLeaf())
+            {
+                int axis = node->SplitAxis();
+                float tplane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
+
+                const KdAccelNode *firstChild, *secondChild;
+                bool belowFirst = (ray.o[axis] < node->SplitPos()) ||
+                        (ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
+                if (belowFirst)
+                {
+                    firstChild = node + 1;
+                    secondChild = &m_nodes[node->AboveChild()];
+                }
+                else
+                {
+                    firstChild = &m_nodes[node->AboveChild()];
+                    secondChild = node + 1;
+                }
+
+                if (tplane > tmax || tplane <= 0)
+                    node = firstChild;
+                else if (tplane < tmin)
+                    node = secondChild;
+                else
+                {
+                    todo[todoPos].node = secondChild;
+                    todo[todoPos].tmin = tplane;
+                    todo[todoPos].tmax = tmax;
+                    ++todoPos;
+                    node = firstChild;
+                    tmax = tplane;
+                }
+            }
+            else
+            {
+                size_t nPrimitives = node->nPrimitives();
+                if (nPrimitives == 1)
+                {
+                    ShapePtr prim = m_primitives[node->onePrimitive];
+                    if (prim->rayIntersect(ray))
+                        return true;
+                }
+                else
+                {
+                    size_t* prims = node->primitives;
+                    for (size_t i = 0; i < nPrimitives; ++i)
+                    {
+                        ShapePtr prim = m_primitives[prims[i]];
+                        if (prim->rayIntersect(ray))
+                            return true;
+                    }
+                }
+
+                if (todoPos > 0)
+                {
+                    --todoPos;
+                    node = todo[todoPos].node;
+                    tmin = todo[todoPos].tmin;
+                    tmax = todo[todoPos].tmax;
+                }
+                else
+                     break;
+            }
+        }
+        return hit;
+    }
+
+    bool rayIntersect(const TRay& ray, Intersection& its)
+    {
+        float tmin, tmax;
+        if (!m_bounds.rayIntersect(ray, tmin, tmax))
+            return false;
+
+        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
+        KdToDo todo[MAX_TODO];
+        int todoPos = 0;
+        bool hit = false;
+        const KdAccelNode* node = &m_nodes[0];
+        while (node != NULL)
+        {
+            if (ray.maxt < tmin)
+                break;
+
+            assert (node != NULL);
+            if (!node->IsLeaf())
+            {
+                int axis = node->SplitAxis();
+                float tplane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
+
+                const KdAccelNode *firstChild, *secondChild;
+                bool belowFirst = (ray.o[axis] < node->SplitPos()) ||
+                        (ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
+                if (belowFirst)
+                {
+                    firstChild = node + 1;
+                    secondChild = &m_nodes[node->AboveChild()];
+                }
+                else
+                {
+                    firstChild = &m_nodes[node->AboveChild()];
+                    secondChild = node + 1;
+                }
+
+                if (tplane > tmax || tplane <= 0)
+                    node = firstChild;
+                else if (tplane < tmin)
+                    node = secondChild;
+                else
+                {
+                    todo[todoPos].node = secondChild;
+                    todo[todoPos].tmin = tplane;
+                    todo[todoPos].tmax = tmax;
+                    ++todoPos;
+                    node = firstChild;
+                    tmax = tplane;
+                }
+            }
+            else
+            {
+                size_t nPrimitives = node->nPrimitives();
+                if (nPrimitives == 1)
+                {
+                    ShapePtr prim = m_primitives[node->onePrimitive];
+                    if (prim->rayIntersect(ray, its))
+                    {
+                        ray.maxt = its.t;
+                        hit = true;
+                    }
+                }
+                else
+                {
+                    size_t* prims = node->primitives;
+                    for (size_t i = 0; i < nPrimitives; ++i)
+                    {
+                        ShapePtr prim = m_primitives[prims[i]];
+                        if (prim->rayIntersect(ray, its))
+                        {
+                            assert(ray.maxt >= its.t);
+                            ray.maxt = its.t;
+                            hit = true;
+                        }
+                    }
+                }
+
+                if (todoPos > 0)
+                {
+                    --todoPos;
+                    node = todo[todoPos].node;
+                    tmin = todo[todoPos].tmin;
+                    tmax = todo[todoPos].tmax;
+                }
+                else
+                     break;
+            }
+        }
+        return hit;
     }
 
 private:
@@ -330,184 +479,13 @@ private:
                         prims0, prims1+nPrimitives, badRefines);
     }
 
-    virtual bool rayIntersect(const TRay& ray)
-    {
-        float tmin, tmax;
-        if (!m_bounds.rayIntersect(ray, tmin, tmax))
-            return false;
-
-        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
-        KdToDo todo[MAX_TODO];
-        int todoPos = 0;
-        bool hit = false;
-        const KdAccelNode* node = &m_nodes[0];
-        while (node != NULL)
-        {
-            if (!node->IsLeaf())
-            {
-                int axis = node->SplitAxis();
-                float tplane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
-
-                const KdAccelNode *firstChild, *secondChild;
-                bool belowFirst = (ray.o[axis] < node->SplitPos()) ||
-                        (ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
-                if (belowFirst)
-                {
-                    firstChild = node + 1;
-                    secondChild = &m_nodes[node->AboveChild()];
-                }
-                else
-                {
-                    firstChild = &m_nodes[node->AboveChild()];
-                    secondChild = node + 1;
-                }
-
-                if (tplane > tmax || tplane <= 0)
-                    node = firstChild;
-                else if (tplane < tmin)
-                    node = secondChild;
-                else
-                {
-                    todo[todoPos].node = secondChild;
-                    todo[todoPos].tmin = tplane;
-                    todo[todoPos].tmax = tmax;
-                    ++todoPos;
-                    node = firstChild;
-                    tmax = tplane;
-                }
-            }
-            else
-            {
-                size_t nPrimitives = node->nPrimitives();
-                if (nPrimitives == 1)
-                {
-                    ShapePtr prim = m_primitives[node->onePrimitive];
-                    if (prim->rayIntersect(ray))
-                        return true;
-                }
-                else
-                {
-                    size_t* prims = node->primitives;
-                    for (size_t i = 0; i < nPrimitives; ++i)
-                    {
-                        ShapePtr prim = m_primitives[prims[i]];
-                        if (prim->rayIntersect(ray))
-                            return true;
-                    }
-                }
-
-                if (todoPos > 0)
-                {
-                    --todoPos;
-                    node = todo[todoPos].node;
-                    tmin = todo[todoPos].tmin;
-                    tmax = todo[todoPos].tmax;
-                }
-                else
-                     break;
-            }
-        }
-        return hit;
-    }
-
-    virtual bool rayIntersect(const TRay& ray, Intersection& its)
-    {
-        float tmin, tmax;
-        if (!m_bounds.rayIntersect(ray, tmin, tmax))
-            return false;
-
-        Vector3f invDir(1.f/ray.d.x, 1.f/ray.d.y, 1.f/ray.d.z);
-        KdToDo todo[MAX_TODO];
-        int todoPos = 0;
-        bool hit = false;
-        const KdAccelNode* node = &m_nodes[0];
-        while (node != NULL)
-        {
-            if (ray.maxt < tmin)
-                break;
-
-			assert (node != NULL);
-            if (!node->IsLeaf())
-            {
-                int axis = node->SplitAxis();
-                float tplane = (node->SplitPos() - ray.o[axis]) * invDir[axis];
-
-                const KdAccelNode *firstChild, *secondChild;
-                bool belowFirst = (ray.o[axis] < node->SplitPos()) ||
-                        (ray.o[axis] == node->SplitPos() && ray.d[axis] <= 0);
-                if (belowFirst)
-                {
-                    firstChild = node + 1;
-                    secondChild = &m_nodes[node->AboveChild()];
-                }
-                else
-                {
-                    firstChild = &m_nodes[node->AboveChild()];
-                    secondChild = node + 1;
-                }
-
-                if (tplane > tmax || tplane <= 0)
-                    node = firstChild;
-                else if (tplane < tmin)
-                    node = secondChild;
-                else
-                {
-                    todo[todoPos].node = secondChild;
-                    todo[todoPos].tmin = tplane;
-                    todo[todoPos].tmax = tmax;
-                    ++todoPos;
-                    node = firstChild;
-                    tmax = tplane;
-                }
-            }
-            else
-            {
-                size_t nPrimitives = node->nPrimitives();
-                if (nPrimitives == 1)
-                {
-                    ShapePtr prim = m_primitives[node->onePrimitive];
-                    if (prim->rayIntersect(ray, its))
-                    {
-						ray.maxt = its.t;
-                        hit = true;
-                    }
-                }
-                else
-                {
-                    size_t* prims = node->primitives;
-                    for (size_t i = 0; i < nPrimitives; ++i)
-                    {
-                        ShapePtr prim = m_primitives[prims[i]];
-                        if (prim->rayIntersect(ray, its))
-                        {
-							assert(ray.maxt >= its.t);
-                            ray.maxt = its.t;
-                            hit = true;
-                        }
-                    }
-                }
-
-                if (todoPos > 0)
-                {
-                    --todoPos;
-                    node = todo[todoPos].node;
-                    tmin = todo[todoPos].tmin;
-                    tmax = todo[todoPos].tmax;
-                }
-                else
-                     break;
-            }
-        }
-        return hit;
-    }
-
 protected:
-    int m_isectCost, m_traversalCost, m_maxPrims, m_maxDepth;
-    float m_emptyBonus;
-    std::vector<ShapePtr> m_primitives;
-    KdAccelNode* m_nodes;
-    int m_nAllocedNodes, m_nextFreeNode;
     BBox m_bounds;
+    float m_emptyBonus;
+    KdAccelNode* m_nodes;
+    std::vector<ShapePtr> m_primitives;
+    int m_nAllocedNodes, m_nextFreeNode;
+    int m_isectCost, m_traversalCost, m_maxPrims, m_maxDepth;
 };
 
 WISP_REGISTER_CLASS(KdTreeAccel, "kdtree")
