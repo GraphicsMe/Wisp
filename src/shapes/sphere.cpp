@@ -9,7 +9,6 @@ public:
     {
         m_radius = paramSet.getFloat("radius", 1.f);
         m_center = paramSet.getPoint("center", Point3f(0.f, 0.f, 0.f));
-        m_diffuse = paramSet.getColor("albedo", Color3f(0.f, 0.f, 0.f));
     }
 
     ~Sphere()
@@ -80,7 +79,6 @@ public:
         //intersection record
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
-        its.color = m_diffuse;
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(its.p-m_center));
         its.shFrame = its.geoFrame;
@@ -93,7 +91,6 @@ public:
     {
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
-        its.color = m_diffuse;
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(its.p-m_center));
         its.shFrame = its.geoFrame;
@@ -114,7 +111,6 @@ public:
 private:
     float m_radius;
     Point3f m_center;
-    Color3f m_diffuse;
 };
 
 WISP_REGISTER_CLASS(Sphere, "sphere")

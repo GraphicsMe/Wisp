@@ -138,10 +138,18 @@ public:
         its.t = t;
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
-        //its.color = m_diffuse;
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(glm::cross(e1, e2)));
-        its.shFrame = its.geoFrame;
+        if (m_pMesh->m_vertexNormals)
+        {
+            Normal3f n0 = m_pMesh->m_vertexNormals[m_index[0]];
+            Normal3f n1 = m_pMesh->m_vertexNormals[m_index[1]];
+            Normal3f n2 = m_pMesh->m_vertexNormals[m_index[2]];
+            Normal3f normal = glm::normalize(n0 * (1.0f - b1 - b2) + n1 * b1 + n2 * b2);
+            its.shFrame = Frame(normal);
+        }
+        else
+            its.shFrame = its.geoFrame;
         its.wo = its.toLocal(-ray.d);
 
         return true;
@@ -179,7 +187,6 @@ public:
         Vector3f e2 = p3 - p1;
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
-        //its.color = m_diffuse;
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(glm::cross(e1, e2)));
         its.shFrame = its.geoFrame;
@@ -202,9 +209,7 @@ public:
 
 private:
     uint32_t* m_index;
-	TriangleMesh* m_pMesh;
-    //Point3f p1, p2, p3;
-    //Color3f m_diffuse;
+    TriangleMesh* m_pMesh;
 };
 
 class WavefrontOBJ : public TriangleMesh
@@ -212,7 +217,6 @@ class WavefrontOBJ : public TriangleMesh
 public:
     WavefrontOBJ(const ParamSet& paramSet)
     {
-        m_diffuse = paramSet.getColor("albedo", Color3f(1.0f, 0.0f, 0.0f));
         Transform toWorld = paramSet.getTransform("toWorld", Transform());
         std::string fileName = paramSet.getString("filename");
         fileName = g_sceneDirectory + fileName;
@@ -252,6 +256,7 @@ public:
             {
                 Vector3f vn;
                 lineStream >> vn.x >> vn.y >> vn.z;
+                vn = glm::normalize(toWorld * vn);
                 normals.push_back(vn);
             }
             else if (prefix == "f")
@@ -369,7 +374,6 @@ public:
         its.shape->fillIntersectionRecord(ray, its);
         //its.p = ray(its.t);
         //its.uv = Point2f(1.0f, 1.0f);
-        //its.color = m_diffuse;
         //its.shape = this;
         //its.geoFrame = Frame(glm::normalize(its.p-m_center));
         //its.shFrame = its.geoFrame;
@@ -462,7 +466,6 @@ protected:
     typedef std::unordered_map<OBJVertex, int, OBJVertexHash> VertexMap;
     //typedef std::shared_ptr<Triangle> TrianglePtr;
     std::vector<Triangle*> m_triangles;
-	Color3f m_diffuse;
     BBox m_bound;
     Distribution1D m_distr;
 };
