@@ -48,6 +48,7 @@ protected:
     mutable std::mutex m_mutex;
 };
 
+typedef std::pair<Vector2i, Vector2i> OffsetSize;
 class BlockGenerator
 {
 public:
@@ -55,17 +56,9 @@ public:
     bool next(ImageBlock& block);
 
 protected:
-    enum EDirection { ERight, EDown, ELeft, EUp};
-
-    Point2i m_block;
-    Vector2i m_numBlocks;
-    Vector2i m_size;
-    int m_blockSize;
-    int m_numSteps;
-    int m_blocksLeft;
-    int m_stepsLeft;
-    int m_direction;
-    std::mutex m_mutex;
+    int m_blocksNumberTotal;
+    std::atomic<int> m_curBlockIndex;
+    std::vector<OffsetSize> m_precomputedBlock;
 };
 
 class BlockRenderThread

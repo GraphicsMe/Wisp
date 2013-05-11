@@ -145,61 +145,60 @@ std::string ImageBlock::toString() const
 }
 
 BlockGenerator::BlockGenerator(const Vector2i& size, int blockSize)
-    : m_size(size), m_blockSize(blockSize)
 {
-    m_numBlocks = Vector2i(
-                (int)std::ceil(size.x / blockSize),
-                (int)std::ceil(size.y / blockSize));
-    m_blocksLeft = m_numBlocks.x * m_numBlocks.y;
-    m_direction = ERight;
-    m_block = Point2i(max(0, m_numBlocks.x/2-1), max(0, m_numBlocks.y/2-1));
-    m_stepsLeft = 1;
-    m_numSteps = 1;
+    Vector2i numBlocks = Vector2i((int)std::ceil(size.x / blockSize),
+                                  (int)std::ceil(size.y / blockSize));
+    m_blocksNumberTotal = numBlocks.x * numBlocks.y;
+    m_curBlockIndex = 0;
+
+    enum EDirection { ERight, EDown, ELeft, EUp};
+
+    int numSteps = 1;
+    int stepsLeft = 1;
+    int direction = ERight;
+    Point2i curBlock = Point2i(max(0, numBlocks.x/2-1), max(0, numBlocks.y/2-1));
+
+
+    for (int i = 0; i < m_blocksNumberTotal; ++i)
+    {
+        Vector2i off = curBlock * blockSize;
+        Vector2i curSize(min(size.x-off.x, blockSize), min(size.y-off.y, blockSize));
+        m_precomputedBlock.push_back(std::make_pair(off, curSize));
+
+        if (i == m_blocksNumberTotal - 1)
+            break;
+        do
+        {
+            switch(direction)
+            {
+            case ERight:    ++curBlock.x; break;
+            case EDown:     ++curBlock.y; break;
+            case ELeft:     --curBlock.x; break;
+            case EUp:       --curBlock.y; break;
+            }
+            if (--stepsLeft == 0) // change direction
+            {
+                direction = (direction + 1) % 4;
+                if (direction == ELeft || direction == ERight)
+                    ++numSteps;
+                stepsLeft = numSteps;
+            }
+        }while (curBlock.x < 0 || curBlock.y < 0 ||
+                curBlock.x >= numBlocks.x ||
+                curBlock.y >= numBlocks.y);
+    }
 }
 
 bool BlockGenerator::next(ImageBlock& block)
 {
-    m_mutex.lock();
-    if (m_blocksLeft == 0)
-    {
-        m_mutex.unlock();
+    if (m_curBlockIndex == m_blocksNumberTotal)
         return false;
-    }
 
-    Point2i pos = m_block * m_blockSize; //pixel coordinate
-
-    // set block parameters
-    block.setOffset(pos);
-    block.setSize(min(m_size.x-pos.x, m_blockSize), min(m_size.y-pos.y, m_blockSize));
-
-    if (--m_blocksLeft == 0)
-    {
+    OffsetSize offSize = m_precomputedBlock[m_curBlockIndex++];
+    block.setOffset(offSize.first);
+    block.setSize(offSize.second);
+    if (m_curBlockIndex == m_blocksNumberTotal)
         std::cout << "Rendering finished!" << std::endl;
-        m_mutex.unlock();
-        return true;
-    }
-
-    do
-    {
-        switch(m_direction)
-        {
-        case ERight:    ++m_block.x; break;
-        case EDown:     ++m_block.y; break;
-        case ELeft:     --m_block.x; break;
-        case EUp:       --m_block.y; break;
-        }
-        if (--m_stepsLeft == 0) // change direction
-        {
-            m_direction = (m_direction + 1) % 4;
-            if (m_direction == ELeft || m_direction == ERight)
-                ++m_numSteps;
-            m_stepsLeft = m_numSteps;
-        }
-    }while (m_block.x < 0 || m_block.y < 0 ||
-            m_block.x >= m_numBlocks.x ||
-            m_block.y >= m_numBlocks.y);
-
-    m_mutex.unlock();
     return true;
 }
 
