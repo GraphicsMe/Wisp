@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Manually converted from Mitsuba XML, converted from MDL -->
 <scene>
-	<integrator type="mipath"/>
+	<integrator type="path"/>
 	
 	<sampler type="stratified">
-		<integer name="sampleCount" value="256"/>
+		<integer name="sampleCount" value="128"/>
 	</sampler>
 
 	<camera type="perspective">

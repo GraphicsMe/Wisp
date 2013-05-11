@@ -1,0 +1,60 @@
+<!-- Steam scene, volume data (c) 2012 by Wenzel Jakob
+	 
+	 The environment map is courtesy of Bernhard Vogl -->
+
+<scene>
+	<!-- Independent sample generator, 128 samples per pixel -->
+	<sampler type="independent">
+		<integer name="sampleCount" value="128"/>
+	</sampler>
+
+	<!-- Use the path tracer with multiple importance sampling -->
+	<integrator type="mipath"/>
+
+	<!-- Render the scene as viewed by a perspective camera -->
+	<camera type="perspective">
+		<transform name="toWorld">
+			<lookat target="28.425, -50.3226, 28.07" 
+			        origin="28.773, -51.1128, 28.40"
+			        up="-0.204606, 0.3544, 0.912435"/>
+		</transform>
+
+		<!-- Field of view: 22 degrees -->
+		<float name="fov" value="22"/>
+
+		<!-- 1024x768 pixels -->
+		<integer name="width" value="1024"/>
+		<integer name="height" value="768"/>
+	</camera>
+
+	<!-- Light using an environment map -->
+	<luminaire type="envmap">
+		<string name="filename" value="envmap.exr"/>
+		<transform name="toWorld">
+			<rotate axis="1,0,0" angle="90"/>
+		</transform>
+	</luminaire>
+
+	<!-- Diffuse floor -->
+	<mesh type="obj">
+		<string name="filename" value="mesh_1.obj"/>
+
+		<bsdf type="microfacet">
+			<color name="kd" value=".0,.0,.0"/>
+		</bsdf>
+	</mesh>
+
+	<!-- Homogeneous medium -->
+	<medium type="heterogeneous">
+		<string name="filename" value="steam.vol"/>
+		<color name="albedo" value=".7 .7 .7"/>
+		<float name="densityMultiplier" value="15.0"/>
+		<transform name="toWorld">
+			<translate value="-.5 -.5 -.5"/>
+			<scale value="20,20,8"/>
+			<rotate axis="1,0,0" angle="-100"/>
+			<rotate axis="0,0,1" angle="50"/>
+			<translate value="0 0 9"/>
+		</transform>
+	</medium>
+</scene>
