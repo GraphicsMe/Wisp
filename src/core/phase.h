@@ -16,12 +16,12 @@ struct PhaseFunctionQueryRecord
         const Vector3f& wo) : wi(wi), wo(wo) {}
 };
 
-class PhaseFucntion : public Object
+class PhaseFunction : public Object
 {
 public:
-    virtual float sample(PhaseFunctionQueryRecord& rec, const Point2f& sample) const = 0;
-    virtual float eval(const PhaseFunctionQueryRecord& rec) const = 0;
     virtual float pdf(const PhaseFunctionQueryRecord& rec) const = 0;
+    virtual float eval(const PhaseFunctionQueryRecord& rec) const = 0;
+    virtual float sample(PhaseFunctionQueryRecord& rec, const Point2f& sample) const = 0;
 
     EClassType getClassType() const { return EPhaseFunction; }
 };

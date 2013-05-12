@@ -24,14 +24,13 @@ public:
     inline const Sampler* getSampler() const { return m_sampler; }
     inline const Integrator* getIntegrator() const { return m_integrator; }
     inline const std::vector<Shape* >& getShapes() const { return m_shapes; }
+    inline const Medium* getMedium() const { m_medium; }
 
     void prepare();
     void addChild(Object *obj);
     bool rayIntersect(const Ray& ray) const;
     bool rayIntersect(const Ray& ray, Intersection& its) const;
 
-    //AreaLight* getAreaLight() const { return m_areaLight; }
-    //void addAreaLight(AreaLight* pAreaLight) { m_areaLight = pAreaLight; }
     // light related
     float pdfLight(const Point3f& p, LightSamplingRecord& lRec) const;
     bool sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
@@ -43,13 +42,13 @@ private:
     bool m_rendering;
     BBox m_bound;
     Camera* m_camera;
+    Medium* m_medium;
     Sampler* m_sampler;
+    Shape* m_aggregate;
     Integrator* m_integrator;
     std::vector<Shape*> m_shapes;
-    Shape* m_aggregate;
-    //AreaLight* m_areaLight;
-    std::vector<Light*> m_lights;
     Distribution1D m_lightPDf;
+    std::vector<Light*> m_lights;
 };
 
 WISP_NAMESPACE_END

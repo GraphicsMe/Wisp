@@ -45,7 +45,10 @@ SOURCES += \
     src/phase/isotropic.cpp \
     src/integrators/mipath.cpp \
     src/core/shape.cpp \
-    src/core/light.cpp
+    src/core/light.cpp \
+    src/core/medium.cpp \
+    src/medium/homogeneous.cpp \
+    src/medium/heterogeneous.cpp
 
 
 HEADERS  += \

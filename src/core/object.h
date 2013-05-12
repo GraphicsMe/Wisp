@@ -28,9 +28,9 @@ public:
     };
 
     virtual ~Object() {}
+    virtual void prepare();
     virtual void addChild(Object* pChild);
     virtual void setParent(Object* pParent);
-    virtual void prepare();
     virtual EClassType getClassType() const = 0;
     virtual std::string toString() const = 0;
 
