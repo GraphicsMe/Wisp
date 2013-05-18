@@ -1,7 +1,7 @@
 #include "phase.h"
 
 WISP_NAMESPACE_BEGIN
-class Isotropic : public PhaseFucntion
+class Isotropic : public PhaseFunction
 {
 public:
     Isotropic(const ParamSet&)

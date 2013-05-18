@@ -11,6 +11,8 @@ public:
     virtual ~Medium();
 
     inline const PhaseFunction* getPhaseFunction() const { return m_phaseFunction; }
+    virtual Color3f evalTransmittance(const Ray& ray, Sampler* sampler) const = 0;
+    virtual bool sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight) const = 0;
 
     virtual void prepare();
     virtual void addChild(Object *pChild);

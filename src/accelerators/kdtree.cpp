@@ -300,7 +300,6 @@ public:
                         ShapePtr prim = m_primitives[prims[i]];
                         if (prim->rayIntersect(ray, its))
                         {
-                            assert(ray.maxt >= its.t);
                             ray.maxt = its.t;
                             hit = true;
                         }

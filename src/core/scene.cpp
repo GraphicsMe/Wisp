@@ -142,6 +142,21 @@ bool Scene::sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& s,
     return true;
 }
 
+Color3f Scene::evalTransmittance(const Ray& ray, Sampler* sampler) const
+{
+    if (m_medium)
+        return m_medium->evalTransmittance(ray, sampler);
+    return Color3f(1.f);
+}
+
+bool Scene::sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight) const
+{
+    if (m_medium)
+        return m_medium->sampleDistance(ray, sampler, t, weight);
+    weight = Color3f(1.0f);
+    return false;
+}
+
 std::string Scene::toString() const
 {
     return std::string("Scene[]");

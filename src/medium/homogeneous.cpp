@@ -11,14 +11,21 @@ public:
         m_worldToMedium = paramSet.getTransform("toWorld", Transform()).inverse();
     }
 
-    bool sampleDistance(const Ray &ray, Sampler *sampler, float &t, Color3f &weight) const
+    bool sampleDistance(const Ray& r, Sampler* sampler, float& t, Color3f& weight) const
     {
+        Ray ray = m_worldToMedium * r;
+
         return false;
     }
 
-    Color3f evalTransmittance(const Ray &ray, Sampler *sampler) const
+    Color3f evalTransmittance(const Ray& ray, Sampler*) const
     {
-        return Color3f(0.f);
+        float negLength = ray.mint - ray.maxt;
+        Color3f transmittance;
+        for (int i = 0; i < 3; ++i)
+            transmittance[i] = std::exp(m_sigmaT[i] * negLength);
+
+        return transmittance;
     }
 
     std::string toString() const {

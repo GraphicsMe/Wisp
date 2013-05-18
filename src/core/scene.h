@@ -35,6 +35,10 @@ public:
     float pdfLight(const Point3f& p, LightSamplingRecord& lRec) const;
     bool sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
 
+    // medium related
+    Color3f evalTransmittance(const Ray& ray, Sampler* sampler) const;
+    bool sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight) const;
+
     EClassType getClassType() const { return EScene; }
     std::string toString() const;
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Manually converted from Mitsuba XML, converted from MDL -->
 <scene>
-	<integrator type="mipath"/>
+	<integrator type="volpath"/>
 
 	<sampler type="independent">
 		<integer name="sampleCount" value="128"/>
@@ -35,7 +35,7 @@
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_1.obj"/>
 		<transform name="toWorld">
-			<translate value="0, 50, 0"/>
+			<translate value="0, -0.5, 0"/>
 		</transform>
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.78, 0.78, 0.78"/>
@@ -47,7 +47,7 @@
 	</mesh>
 
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_16.obj"/>
+		<string name="filename" value="meshes/cbox_2.obj"/>
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.75, 0.75, 0.75"/>
 		</bsdf>

@@ -2,6 +2,7 @@
 #define TRANSFORM_H
 
 #include "common.h"
+#include "geometry.h"
 
 WISP_NAMESPACE_BEGIN
 
@@ -47,6 +48,14 @@ public:
         Vector4f result = m_transform * p;
         Point3f ret(result.x, result.y, result.z);
         return ret/result.w;
+    }
+
+    inline Ray operator*(const Ray& r) const
+    {
+        Ray ret(r);
+        ret.d = (*this)*r.d;
+        ret.o = (*this)*Point4f(r.o.x, r.o.y, r.o.z, 1.0f);
+        return ret;
     }
 
     inline void setIdentity()

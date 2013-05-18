@@ -48,7 +48,8 @@ SOURCES += \
     src/core/light.cpp \
     src/core/medium.cpp \
     src/medium/homogeneous.cpp \
-    src/medium/heterogeneous.cpp
+    src/medium/heterogeneous.cpp \
+    src/integrators/volpath.cpp
 
 
 HEADERS  += \
