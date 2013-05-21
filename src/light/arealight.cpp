@@ -14,9 +14,10 @@ public:
     void sample_f(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample) const
     {
         lRec.pdf = m_shape->sampleSolidAngle(lRec.sRec, p, sample);
-        lRec.d = p - lRec.sRec.p;
-        if (lRec.pdf > 0 && glm::dot(lRec.d, lRec.sRec.n))
+        if (lRec.pdf > 0)
         {
+            lRec.d = p - lRec.sRec.p;
+            assert (glm::dot(lRec.d, lRec.sRec.n) > 0.f);
             lRec.value = m_radiance;
             lRec.d = glm::normalize(lRec.d);
         }

@@ -24,7 +24,7 @@ public:
     inline const Sampler* getSampler() const { return m_sampler; }
     inline const Integrator* getIntegrator() const { return m_integrator; }
     inline const std::vector<Shape* >& getShapes() const { return m_shapes; }
-    inline const Medium* getMedium() const { m_medium; }
+    inline const Medium* getMedium() const { return m_medium; }
 
     void prepare();
     void addChild(Object *obj);
@@ -33,11 +33,13 @@ public:
 
     // light related
     float pdfLight(const Point3f& p, LightSamplingRecord& lRec) const;
-    bool sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
+    bool sampleLight(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
+    bool sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
+            const Point2f& sample, float epsilon, Sampler* sampler) const;
 
     // medium related
     Color3f evalTransmittance(const Ray& ray, Sampler* sampler) const;
-    bool sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight) const;
+    bool sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight, float& albedo) const;
 
     EClassType getClassType() const { return EScene; }
     std::string toString() const;

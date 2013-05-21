@@ -117,7 +117,7 @@ float Scene::pdfLight(const Point3f& p, LightSamplingRecord& lRec) const
     return light->pdf(p, lRec) * fraction;
 }
 
-bool Scene::sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& s, float epsilon) const
+bool Scene::sampleLight(const Point3f& p, LightSamplingRecord& lRec, const Point2f& s, float epsilon) const
 {
     Point2f sample(s);
     float lumPdf;
@@ -136,8 +136,40 @@ bool Scene::sampleLight(Point3f& p, LightSamplingRecord& lRec, const Point2f& s,
     if (this->rayIntersect(ray))
         return false;
 
+    Color3f temp = lRec.value;
     lRec.pdf *= lumPdf;
     lRec.value /= lRec.pdf;
+    lRec.light = light;
+    return true;
+}
+
+bool Scene::sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
+            const Point2f& s, float epsilon, Sampler* sampler) const
+{
+    Point2f sample(s);
+    float lumPdf;
+    size_t index = m_lightPDf.sampleReuse(sample.x, lumPdf);
+    assert (lumPdf == 1.0f);
+    Light* light = m_lights[index];
+    if (!light)
+        throw WispException(formatString("index: %d", index));
+    light->sample_f(p, lRec, sample);
+    if (lRec.pdf == 0.f)
+        return false;
+
+    Color3f temp = lRec.value;
+    Vector3f dir = lRec.sRec.p - p;
+    float length = glm::length(dir);
+    Ray ray(p, dir/length, epsilon, length*(1.0f - ShadowEpsilon));
+    if (this->rayIntersect(ray))
+        return false;
+    Color3f trans = evalTransmittance(ray, sampler);
+    assert (trans.x <= 1.f && trans.y <=  1.f && trans.z <= 1.f);
+    lRec.value *= trans;
+    lRec.pdf *= lumPdf;
+    lRec.value /= lRec.pdf;
+    //if (lRec.value.x > 1000.f)
+    //    printf ("lRec.value3: %f pdf: %f\n", lRec.value.x, lRec.pdf);
     lRec.light = light;
     return true;
 }
@@ -149,11 +181,11 @@ Color3f Scene::evalTransmittance(const Ray& ray, Sampler* sampler) const
     return Color3f(1.f);
 }
 
-bool Scene::sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight) const
+bool Scene::sampleDistance(const Ray& ray, Sampler* sampler, float& t, Color3f& weight, float& albedo) const
 {
-    if (m_medium)
-        return m_medium->sampleDistance(ray, sampler, t, weight);
     weight = Color3f(1.0f);
+    if (m_medium)
+        return m_medium->sampleDistance(ray, sampler, t, weight, albedo);
     return false;
 }
 

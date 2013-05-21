@@ -9,7 +9,6 @@ class Ray
 public:
     Point3f o;
     Vector3f d;
-    Vector3f dRcp;
     float mint;
     mutable float maxt;
 
@@ -42,7 +41,6 @@ public:
     inline Ray(const Ray& ray)
         : o(ray.o)
         , d(ray.d)
-        , dRcp(ray.dRcp)
         , mint(ray.mint)
         , maxt(ray.maxt)
     {}
@@ -50,7 +48,6 @@ public:
     inline Ray(const Ray& ray, float mint, float maxt)
         : o(ray.o)
         , d(ray.d)
-        , dRcp(ray.dRcp)
         , mint(mint)
         , maxt(maxt)
     {}
@@ -61,7 +58,6 @@ public:
     {
         Ray result(*this);
         result.d = -this->d;
-        result.dRcp = -this->dRcp;
     }
 };
 
@@ -87,7 +83,7 @@ public:
     friend BBox merge(const BBox& b, const Point3f& p);
     friend BBox merge(const BBox& b1, const BBox& b2);
 
-    bool rayIntersect(const Ray& ray, float& t0, float& t1);
+    bool rayIntersect(const Ray& ray, float& t0, float& t1) const;
 
     bool overLaps(const BBox& b) const
     {

@@ -35,4 +35,10 @@ void Medium::addChild(Object *pChild)
     }
 }
 
+bool Medium::inside(const Point3f& p) const
+{
+    Point3f pp = m_worldToMedium * Point4f(p.x, p.y, p.z, 1.0f);
+    return m_bound.inside(pp);
+}
+
 WISP_NAMESPACE_END

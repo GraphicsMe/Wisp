@@ -21,7 +21,7 @@ public:
         return 0.f;
     }
 
-    bool sampleDistance(const Ray&, Sampler*, float&, Color3f&) const
+    bool sampleDistance(const Ray&, Sampler*, float&, Color3f&, float&) const
     {
         return false;
     }
