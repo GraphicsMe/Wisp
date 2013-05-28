@@ -14,6 +14,8 @@ public:
     VolumePathIntegrator(const ParamSet& paramSet)
     {
         m_maxDepth = paramSet.getInteger("maxDepth", 10);
+        m_multipleScattering = paramSet.getBoolean("multipleScattering", true);
+        m_multipleScattering = true;
     }
 
     Color3f Li(const Scene *scene, Sampler *sampler, const Ray &r) const
@@ -26,22 +28,26 @@ public:
             if (!scene->rayIntersect(ray, its))
                 break;
 
+            float t;
             float albedo;
             Color3f weight;
-            if (scene->sampleDistance(ray, sampler, its.t, weight, albedo))
+            if (scene->sampleDistance(ray, sampler, t, weight, albedo))
             {
                 pathThrough *= weight;
 
-                Point3f scatterP = ray(its.t);//ray.o+ray.d*its.t;
+                Point3f scatterP = ray(t);
                 assert (scene->getMedium()->inside(scatterP));
 
-                // sample light
                 const PhaseFunction* phase = scene->getMedium()->getPhaseFunction();
                 assert (phase != NULL);
 
+                // sample light
                 LightSamplingRecord lRec;
                 if (scene->sampleAttenuatedLight(scatterP, lRec, sampler->next2D(), its.t*Epsilon, sampler))
                     L += pathThrough * lRec.value * phase->eval(PhaseFunctionQueryRecord(-ray.d, -lRec.d));
+
+                if (!m_multipleScattering)
+                    break;
 
                 // sample phase function
                 PhaseFunctionQueryRecord pRec(-ray.d);
@@ -67,8 +73,8 @@ public:
                 const BSDF* bsdf = its.getBSDF();
                 assert (bsdf != NULL);
 
-                //if (depth == 0 && its.shape->isLight())
-                //    L += pathThrough * its.Le(-ray.d);
+                if (depth == 0 && its.shape->isLight())
+                    L += pathThrough * its.Le(-ray.d);
 
                 // sample light
                 LightSamplingRecord lRec;
@@ -79,6 +85,9 @@ public:
                     Color3f bsdfVal = bsdf->eval(bRec);
                     L += pathThrough * lRec.value * bsdfVal;
                 }
+
+                if (!m_multipleScattering)
+                    break;
 
                 // sample bsdf
                 BSDFQueryRecord bRec(its);
@@ -109,6 +118,7 @@ public:
     }
 private:
     int m_maxDepth;
+    bool m_multipleScattering;
 };
 
 WISP_REGISTER_CLASS(VolumePathIntegrator, "volpath")

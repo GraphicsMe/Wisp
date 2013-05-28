@@ -3,7 +3,7 @@
 <scene>
 	<integrator type="volpath"/>
 
-	<sampler type="independent">
+	<sampler type="stratified">
 		<integer name="sampleCount" value="128"/>
 	</sampler>
 

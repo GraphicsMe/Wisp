@@ -9,6 +9,7 @@ public:
     {
         m_sigmaS = paramSet.getColor("sigmaS");
         m_sigmaT = paramSet.getColor("sigmaA") + m_sigmaS;
+        m_toWorld = paramSet.getTransform("toWorld", Transform());
         m_worldToMedium = paramSet.getTransform("toWorld", Transform()).inverse();
     }
 
@@ -31,15 +32,23 @@ public:
         float range = t1 - t0;
         if (sampledDistance < range)
         {
+            t = sampledDistance + t0;
+            Point3f p = r(t);
+            p = m_worldToMedium * Point4f(p.x, p.y, p.z, 1.0f);
+            if (!m_bound.inside(p))
+            {
+                puts("out side media!");
+                goto fail;
+            }
             // pdf = transmittance * sigmaT * samplingWeight = sigmaS * transmittance
             // weight = sigmaS * transmittance / pdf = 1.0
             weight = Color3f(1.0f);
             albedo = samplingWeight;
-            t = sampledDistance + t0;
             return true;
         }
         else
         {
+            fail:
             sampledDistance = range;
             // pdf = samplingWeight * transmittance + (1 - samplingWeight)
             // weight = transmittance / pdf
@@ -77,6 +86,7 @@ public:
 private:
     Color3f m_sigmaS;
     Color3f m_sigmaT;
+    Transform m_toWorld;
     //Transform m_worldToMedium;
 };
 

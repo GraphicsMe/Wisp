@@ -54,6 +54,8 @@ void render(Scene* scene, std::string strFileName)
     BlockRenderThread th(scene,
                 scene->getSampler(), &blockGenerator, &result);
     th();*/
+
+    result.savePfm("wisp.pfm");
 }
 
 void extractSceneDirectory(const std::string& sceneFile, std::string& fileName)

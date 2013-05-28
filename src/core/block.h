@@ -27,6 +27,8 @@ public:
     bool put(const Point2f& pos, const Color3f& value);
     bool put(ImageBlock& block);
 
+    bool savePfm(const char* filename);
+
     inline void lock() const { m_mutex.lock(); }
     inline void unlock() const { m_mutex.unlock(); }
     std::string toString() const;

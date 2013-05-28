@@ -157,7 +157,6 @@ bool Scene::sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
     if (lRec.pdf == 0.f)
         return false;
 
-    Color3f temp = lRec.value;
     Vector3f dir = lRec.sRec.p - p;
     float length = glm::length(dir);
     Ray ray(p, dir/length, epsilon, length*(1.0f - ShadowEpsilon));
@@ -168,8 +167,6 @@ bool Scene::sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
     lRec.value *= trans;
     lRec.pdf *= lumPdf;
     lRec.value /= lRec.pdf;
-    //if (lRec.value.x > 1000.f)
-    //    printf ("lRec.value3: %f pdf: %f\n", lRec.value.x, lRec.pdf);
     lRec.light = light;
     return true;
 }

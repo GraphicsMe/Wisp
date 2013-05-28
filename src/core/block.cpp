@@ -137,6 +137,35 @@ const Color4f& ImageBlock::get(int x, int y) const
     return m_pixels[id];
 }
 
+bool ImageBlock::savePfm(const char* filename)
+{
+    FILE* f;
+    errno_t err=fopen_s(&f, filename, "wb");
+    if(err != 0)
+        return false;
+
+    fprintf_s(f, "PF\n%d %d\n%f\n", m_size.x, m_size.y, -1.f);
+    Color4f* data = m_results + m_totalSize.x * (m_borderSize.y+m_size.y-1) + m_borderSize.x;
+    float* copy = new float[m_size.x * m_size.y * 3];
+    float* temp = copy;
+    for (int i = 0; i < m_size.y; ++i)
+    {
+        for (int j = 0; j < m_size.x; ++j)
+        {
+            *temp++ = data[j].x;
+            *temp++ = data[j].y;
+            *temp++ = data[j].z;
+        }
+        data -= m_size.x;
+    }
+    int n = fwrite(copy,sizeof(float)*3, m_size.x * m_size.y, f);
+    assert (n == m_size.x * m_size.y);
+
+    delete [] copy;
+    fclose(f);
+    return true;
+}
+
 std::string ImageBlock::toString() const
 {
     return formatString("ImageBlock[offset=%d %d, size=%d, %d]",
