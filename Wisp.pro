@@ -49,7 +49,8 @@ SOURCES += \
     src/core/medium.cpp \
     src/medium/homogeneous.cpp \
     src/medium/heterogeneous.cpp \
-    src/integrators/volpath.cpp
+    src/integrators/volpath.cpp \
+    src/core/reflection.cpp
 
 
 HEADERS  += \
@@ -77,7 +78,8 @@ HEADERS  += \
     src/core/distribution1D.h \
     src/core/timer.h \
     src/core/medium.h \
-    src/core/phase.h
+    src/core/phase.h \
+    src/core/reflection.h
 
 FORMS    += \
     src/gui/mainwindow.ui
