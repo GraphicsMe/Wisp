@@ -22,6 +22,7 @@ public:
     virtual float pdf(const PhaseFunctionQueryRecord& rec) const = 0;
     virtual float eval(const PhaseFunctionQueryRecord& rec) const = 0;
     virtual float sample(PhaseFunctionQueryRecord& rec, const Point2f& sample) const = 0;
+    virtual float sample(PhaseFunctionQueryRecord& rec, float& pdf, const Point2f& sample) const = 0;
 
     EClassType getClassType() const { return EPhaseFunction; }
 };

@@ -171,6 +171,14 @@ bool Scene::sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
     return true;
 }
 
+bool Scene::attenuatedRayintersect(const Ray &ray, Intersection &its, Color3f &transmittance, Sampler *sampler) const
+{
+    if (!m_aggregate->rayIntersect(ray, its))
+        return false;
+    transmittance = this->evalTransmittance(ray, sampler);
+    return true;
+}
+
 Color3f Scene::evalTransmittance(const Ray& ray, Sampler* sampler) const
 {
     if (m_medium)

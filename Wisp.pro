@@ -50,7 +50,8 @@ SOURCES += \
     src/medium/homogeneous.cpp \
     src/medium/heterogeneous.cpp \
     src/integrators/volpath.cpp \
-    src/core/reflection.cpp
+    src/core/reflection.cpp \
+    src/integrators/volpath_simple.cpp
 
 
 HEADERS  += \

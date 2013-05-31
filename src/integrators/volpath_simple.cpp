@@ -8,10 +8,10 @@
 #include "phase.h"
 
 WISP_NAMESPACE_BEGIN
-class VolumePathIntegrator : public Integrator
+class SimpleVolumePathIntegrator : public Integrator
 {
 public:
-    VolumePathIntegrator(const ParamSet& paramSet)
+    SimpleVolumePathIntegrator(const ParamSet& paramSet)
     {
         m_maxDepth = paramSet.getInteger("maxDepth", 10);
         m_multipleScattering = paramSet.getBoolean("multipleScattering", true);
@@ -44,38 +44,19 @@ public:
                 // sample light
                 LightSamplingRecord lRec;
                 if (scene->sampleAttenuatedLight(scatterP, lRec, sampler->next2D(), its.t*Epsilon, sampler))
-                {
-                    float phaseVal = phase->eval(PhaseFunctionQueryRecord(-ray.d, -lRec.d));
-                    if (phaseVal != 0.f)
-                    {
-                        float phasePdf = phase->pdf(PhaseFunctionQueryRecord(-ray.d, -lRec.d));
-                        float weight = powerHeuristic(1, lRec.pdf, 1, phasePdf);
-                        L += pathThrough * lRec.value * phaseVal * weight;
-                    }
-                }
+                    L += pathThrough * lRec.value * phase->eval(PhaseFunctionQueryRecord(-ray.d, -lRec.d));
 
                 if (!m_multipleScattering)
                     break;
 
                 // sample phase function
-                float phasePdf;
                 PhaseFunctionQueryRecord pRec(-ray.d);
-                float phaseVal = phase->sample(pRec, phasePdf, sampler->next2D());
+                float phaseVal = phase->sample(pRec, sampler->next2D());
                 if (phaseVal == 0.f)
                     break;
                 pathThrough *= phaseVal;
 
                 ray = Ray(scatterP, pRec.wo, 0.f);
-                Color3f transmittance(1.f);
-                if (scene->attenuatedRayintersect(ray, its, transmittance, sampler) && its.shape->isLight())
-                {
-                    lRec = LightSamplingRecord(its, -ray.d);
-                    lRec.value = its.Le(-ray.d);
-
-                    float lightPdf = scene->pdfLight(scatterP, lRec);
-                    float weight = powerHeuristic(1, phasePdf, 1, lightPdf);
-                    L += pathThrough * lRec.value * phaseVal * weight * transmittance;
-                }
 
                 if (depth > 5)
                 {
@@ -102,34 +83,20 @@ public:
                     Vector3f wi = -lRec.d;
                     BSDFQueryRecord bRec(its, its.toLocal(wi));
                     Color3f bsdfVal = bsdf->eval(bRec);
-                    float bsdfPdf = bsdf->pdf(bRec);
-                    float weight = powerHeuristic(1, lRec.pdf, 1, bsdfPdf);
-                    L += pathThrough * lRec.value * bsdfVal * weight;
+                    L += pathThrough * lRec.value * bsdfVal;
                 }
 
                 if (!m_multipleScattering)
                     break;
 
                 // sample bsdf
-                float bsdfPdf;
                 BSDFQueryRecord bRec(its);
-                Color3f bsdfVal = bsdf->sample_f(bRec, bsdfPdf, sampler->next2D());
+                Color3f bsdfVal = bsdf->sample_f(bRec, sampler->next2D());
                 if (isZero(bsdfVal))
                     break;
 
                 Vector3f wi = its.toWorld(bRec.wi);
                 ray = Ray(its.p, wi, its.t*Epsilon);
-
-                Color3f transmittance(1.f);
-                if (scene->attenuatedRayintersect(ray, its, transmittance, sampler) && its.shape->isLight())
-                {
-                    lRec = LightSamplingRecord(its, -ray.d);
-                    lRec.value = its.Le(-ray.d);
-
-                    float lightPdf = scene->pdfLight(ray.o, lRec);
-                    float weight = powerHeuristic(1, bsdfPdf, 1, lightPdf);
-                    L += pathThrough * lRec.value * bsdfVal * weight * transmittance;
-                }
 
                 pathThrough *= bsdfVal;
 
@@ -147,12 +114,12 @@ public:
 
     std::string toString() const
     {
-        return formatString("VolumePathIntegrator[]");
+        return formatString("SimpleVolumePathIntegrator[]");
     }
 private:
     int m_maxDepth;
     bool m_multipleScattering;
 };
 
-WISP_REGISTER_CLASS(VolumePathIntegrator, "volpath")
+WISP_REGISTER_CLASS(SimpleVolumePathIntegrator, "volpath_simple")
 WISP_NAMESPACE_END

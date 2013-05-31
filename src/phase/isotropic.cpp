@@ -25,6 +25,13 @@ public:
         return 1.f;
     }
 
+    virtual float sample(PhaseFunctionQueryRecord& rec, float& pdf, const Point2f& sample) const
+    {
+        rec.wo = uniformSphere(sample.x, sample.y);
+        pdf = INV_FOURPI;
+        return 1.f;
+    }
+
     std::string toString() const
     {
         return std::string("Isotropic[]");

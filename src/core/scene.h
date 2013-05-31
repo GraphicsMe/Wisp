@@ -36,6 +36,8 @@ public:
     bool sampleLight(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample, float epsilon) const;
     bool sampleAttenuatedLight(const Point3f& p, LightSamplingRecord& lRec,
             const Point2f& sample, float epsilon, Sampler* sampler) const;
+    bool attenuatedRayintersect(const Ray& ray, Intersection& its,
+                                Color3f& transmittance, Sampler* sampler) const;
 
     // medium related
     Color3f evalTransmittance(const Ray& ray, Sampler* sampler) const;
