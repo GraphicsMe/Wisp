@@ -9,7 +9,7 @@ Color3f fresnelDiel(float cosi, float cost, const Color3f& etaI, const Color3f& 
 class Fresnel
 {
 public:
-    virtual ~Fresnel();
+    virtual ~Fresnel() {}
     virtual Color3f eval(float cosi) const = 0;
 };
 
@@ -18,7 +18,10 @@ class FresnelConductor : public Fresnel
 public:
     FresnelConductor(const Color3f& e, const Color3f& kk)
         : m_eta(e), m_k(kk) {}
+    ~FresnelConductor() {}
+
     Color3f eval(float cosi) const;
+
 private:
     Color3f m_eta;
     Color3f m_k; // absortion coefficient
@@ -28,6 +31,8 @@ class FresnelDielectric : public Fresnel
 {
 public:
     FresnelDielectric(float ei, float et) : m_etaI(ei), m_etaT(et) {}
+    ~FresnelDielectric() {}
+
     Color3f eval(float cosi) const;
 
 private:
@@ -45,9 +50,9 @@ public:
         EAnisotropic    = 3
     };
 
-    MicrofacetDistribution(EType type = EPhong) : m_type(type) {}
+    MicrofacetDistribution(EType type) : m_type(type) {}
 
-    MicrofacetDistribution(std::string strType = "phong")
+    MicrofacetDistribution(std::string strType)
     {
         if (strType == "beckmann")
             m_type = EBeckmann;
@@ -72,20 +77,22 @@ public:
         return value;
     }
 
-    inline float eval(const Normal3f& n, float alpha) const
+    inline float eval(const Normal3f& h, float alpha) const
     {
-        return eval(n, alpha, alpha);
+        return eval(h, alpha, alpha);
     }
 
-    float eval(const Normal3f& n, float alphaU, float alphaV) const
+    float eval(const Normal3f& h, float alphaU, float alphaV) const
     {
-        if (Frame::cosTheta(n) <= 0)
+        if (Frame::cosTheta(h) <= 0)
             return 0.0f;
         float result;
         switch(m_type)
         {
         case EBeckmann:{
-            assert (0);
+            float ex = Frame::tanTheta(h) / alphaU;
+            result = std::exp(-(ex*ex)) / (M_PI * alphaU*alphaU *
+                    std::pow(Frame::cosTheta(h), 4.0f));
             }
             break;
         case EGGX:{
@@ -94,7 +101,7 @@ public:
             break;
         case EPhong:{
             result = (alphaU + 2.f) * INV_TWOPI
-                    * std::pow(Frame::cosTheta(n), alphaU);
+                    * std::pow(Frame::cosTheta(h), alphaU);
             }
             break;
         case EAnisotropic:{
@@ -113,11 +120,55 @@ public:
         return pdf(n, alpha, alpha);
     }
 
-    float pdf(const Normal3f &n, float alphaU, float alphaV) const
+    float pdf(const Normal3f& h, float alphaU, float alphaV) const
     {
-        assert(0);
+        return eval(h, alphaU, alphaV) * Frame::cosTheta(h);
+    }
+
+    inline Normal3f sample(const Point2f& s, float alpha) const
+    {
+        return sample(s, alpha, alpha);
+    }
+
+    Normal3f sample(const Point2f &sample, float alphaU, float alphaV) const
+    {
+        float cosThetaH = 0.f, phiH = 2.f * M_PI / sample.y;
+        switch(m_type)
+        {
+        case EBeckmann:
+            float tanThetaMSqr = -alphaU*alphaU * std::log(1.0f - sample.x);
+            cosThetaH = 1.0f / std::sqrt(1 + tanThetaMSqr);
+            break;
+        }
+
+        float sinThetaH = std::sqrt(std::max(0.f, 1.f - cosThetaH*cosThetaH));
+
+        return Normal3f(sinThetaH * std::cos(phiH),
+                        sinThetaH * std::sin(phiH),
+                        cosThetaH);
+    }
+
+    inline float G(const Vector3f& wi, const Vector3f& wo,
+                   const Vector3f& n, float alpha)
+    {
+        return G(wi, wo, n, alpha, alpha);
+    }
+
+    inline float G(const Vector3f& wi, const Vector3f& wo,
+                   const Vector3f& wh, float, float)
+    {
+        if (glm::dot(wi, wh) * Frame::cosTheta(wi) <= 0.f ||
+            glm::dot(wo, wh) * Frame::cosTheta(wo) <= 0.f)
+            return 0.f;
+        float NdotWh = Frame::cosTheta(wh);
+        float NdotWo = Frame::cosTheta(wo);
+        float NdotWi = Frame::cosTheta(wi);
+        float WOdotWh = glm::dot(wo, wh);
+        return glm::min(1.f, glm::min((2.f * NdotWh * NdotWo / WOdotWh),
+                         (2.f * NdotWh * NdotWi / WOdotWh)));
         return 0.f;
     }
+
 private:
     EType m_type;
 };

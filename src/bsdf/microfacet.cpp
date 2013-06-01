@@ -14,6 +14,7 @@ public:
         m_extIOR = paramSet.getFloat("extIOR", 1.000277f); // air
         m_kd = paramSet.getColor("kd", Color3f(0.5f));
         m_ks = 1.f - vectorMax(m_kd);
+        m_fresnel = new FresnelDielectric(m_intIOR, m_extIOR);
         m_distribution = new MicrofacetDistribution(paramSet.getString("type", "beckmann"));
     }
 
@@ -28,18 +29,57 @@ public:
         return this->sample_f(bRec, pdf, sample);
     }
 
-    Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f& sample) const
+    Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f& _sample) const
     {
         if (Frame::cosTheta(bRec.wo) <= 0)
             return Color3f(0.0f);
-        return Color3f(1.0f);
+
+        Point2f sample(_sample);
+        float probSpecular = 0.5f;
+        bool choseSpeuclar = true;
+        if (sample.y <= probSpecular)
+            sample.y /= probSpecular;
+        else
+        {
+            sample.y = (sample.y - probSpecular) / (1.f - probSpecular);
+            choseSpeuclar = false;
+        }
+
+        if (choseSpeuclar)
+        {
+            float alphaT = m_distribution->unifyRoughness(m_alpha);
+            Normal3f n = m_distribution->sample(sample, alphaT);
+            bRec.wi = reflect(bRec.wo, n);
+
+            if (Frame::cosTheta(bRec.wi) <= 0.f)
+                return Color3f(0.f);
+        }
+        else
+        {
+            bRec.wi = cosineHemisphere(sample.x, sample.y);
+        }
+
+        pdf = this->pdf(bRec);
+        return this->eval(bRec) / pdf;
     }
 
     Color3f eval(const BSDFQueryRecord& bRec) const
     {
-        bRec;
-        assert (0);
-        return Color3f(0.0f);
+        if (Frame::cosTheta(bRec.wi) <= 0.f ||
+            Frame::cosTheta(bRec.wo) <= 0.f)
+            return Color3f(0.f);
+
+        float alphaT = m_distribution->unifyRoughness(m_alpha);
+
+        Color3f diffuse = m_kd * INV_PI;
+
+        //specular
+        Vector3f H = glm::normalize(bRec.wi + bRec.wo);
+        float D = m_distribution->eval(H, alphaT);
+        Color3f F = m_fresnel->eval(glm::dot(bRec.wi, H));
+        float G = m_distribution->G(bRec.wi, bRec.wo, H, alphaT);
+        Color3f specular = m_ks * D * F * G / (4.f * Frame::cosTheta(bRec.wo));
+        return diffuse + specular;
     }
 
     float pdf(const BSDFQueryRecord& bRec) const
@@ -59,6 +99,7 @@ private:
     float m_intIOR, m_extIOR;
     float m_ks;
     Color3f m_kd;
+    Fresnel* m_fresnel;
     MicrofacetDistribution* m_distribution;
 };
 
