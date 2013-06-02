@@ -57,7 +57,7 @@ Vector3f uniformSphere(float u1, float u2)
 Vector3f cosineHemisphere(float u1, float u2)
 {
     Point2f disk = concentricDisk(u1, u2);
-    float z = max(0.0f, 1.0f - disk.x * disk.x - disk.y * disk.y);
+    float z = std::sqrt(max(0.0f, 1.0f - disk.x * disk.x - disk.y * disk.y));
     return Vector3f(disk.x, disk.y, z);
 }
 

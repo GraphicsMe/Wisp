@@ -22,8 +22,8 @@ class BSDF : public Object
 {
 public:
     virtual float pdf(const BSDFQueryRecord& bRec) const = 0;
-    virtual Color3f eval(const BSDFQueryRecord& bRec) const = 0;
-    virtual Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const = 0;
+    virtual Color3f eval(const BSDFQueryRecord& bRec) const = 0; //bsdf*cosTheta
+    virtual Color3f sample_f(BSDFQueryRecord& bRec, const Point2f& sample) const = 0; //bsdf*cosTheta/pdf
     virtual Color3f sample_f(BSDFQueryRecord& bRec, float& pdf, const Point2f& sample) const = 0;
 
     EClassType getClassType() const { return EBSDF; }

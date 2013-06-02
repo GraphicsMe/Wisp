@@ -27,8 +27,8 @@
 	<mesh type="obj">
 		<string name="filename" value="ajax.obj"/>
 
-		<bsdf type="diffuse">
-			<color name="albedo" value="0.5, 0.4, 0.3"/>
+		<bsdf type="microfacet">
+			<color name="kd" value="0.5, 0.4, 0.3"/>
 		</bsdf>
 	</mesh>
 

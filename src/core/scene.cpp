@@ -122,7 +122,6 @@ bool Scene::sampleLight(const Point3f& p, LightSamplingRecord& lRec, const Point
     Point2f sample(s);
     float lumPdf;
     size_t index = m_lightPDf.sampleReuse(sample.x, lumPdf);
-    assert (lumPdf == 1.0f);
     Light* light = m_lights[index];
     if (!light)
         throw WispException(formatString("index: %d", index));
