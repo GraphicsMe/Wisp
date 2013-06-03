@@ -12,7 +12,7 @@ WISP_NAMESPACE_BEGIN
 std::atomic<double> g_renderFinishTime = 0;
 
 ImageBlock::ImageBlock(const Vector2i& size, const Filter* filter)
-    : m_size(size)
+    : m_size(size), m_offset(0)
 {
     m_filterSize = filter->getFilterSize();
     m_borderSize = Vector2i(std::ceil(m_filterSize.x - 0.5f), std::ceil(m_filterSize.y - 0.5f));
@@ -110,7 +110,7 @@ bool ImageBlock::put(ImageBlock& block)
 {
     this->lock();
     Vector2i offset = block.getOffset();
-	Vector2i realOff = offset + m_borderSize - block.getBorderSize();
+    Vector2i realOff = offset + m_borderSize + m_offset - block.getBorderSize();
     Vector2i size = block.getTotalSize();
     
     for (int j = 0; j < size.y; ++j)
