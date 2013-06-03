@@ -40,6 +40,8 @@ public:
     DEFINE_PARAM(std::string, String, string)
     DEFINE_PARAM(Transform, Transform, transform)
 
+    bool hasProperty(const std::string& strName) const;
+
 private:
     typedef boost::variant<bool, int, float, std::string,
             Color3f, Point3f, Transform> Param;

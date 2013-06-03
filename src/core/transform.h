@@ -77,6 +77,19 @@ public:
         return Transform(m, minv);
     }
 
+    static Transform translate(const Vector3f& v)
+    {
+        Matrix4f m(1.f, 0.f, 0.f, 0.f,
+                   0.f, 1.f, 0.f, 0.f,
+                   0.f, 0.f, 1.f, 0.f,
+                   v.x, v.y, v.z, 1.f);
+        Matrix4f minv(1.f, 0.f, 0.f, 0.f,
+                   0.f, 1.f, 0.f, 0.f,
+                   0.f, 0.f, 1.f, 0.f,
+                   -v.x, -v.y, -v.z, 1.f);
+        return Transform(m, minv);
+    }
+
     static Transform translate(float x, float y, float z)
     {
         Matrix4f m(1.f, 0.f, 0.f, 0.f,

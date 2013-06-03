@@ -32,6 +32,9 @@ public:
     virtual void sample_f(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample) const;
 
     EClassType getClassType() const { return ELuminaire; }
+
+protected:
+    Transform m_worldToLight, m_lightToWorld;
 };
 
 WISP_NAMESPACE_END

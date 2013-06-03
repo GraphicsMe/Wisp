@@ -94,9 +94,15 @@ void Scene::addChild(Object *obj)
         }
         break;
 
+    case ELuminaire:
+        {
+            m_lights.push_back(static_cast<Light*>(obj));
+        }
+        break;
+
     default:
         throw WispException(formatString("Scene::addChild(%s) is not supported!",
-                            classTypeName(obj->getClassType())));
+                            classTypeName(obj->getClassType()).c_str()));
     }
 }
 
@@ -135,7 +141,6 @@ bool Scene::sampleLight(const Point3f& p, LightSamplingRecord& lRec, const Point
     if (this->rayIntersect(ray))
         return false;
 
-    Color3f temp = lRec.value;
     lRec.pdf *= lumPdf;
     lRec.value /= lRec.pdf;
     lRec.light = light;

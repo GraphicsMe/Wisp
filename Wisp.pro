@@ -51,7 +51,10 @@ SOURCES += \
     src/medium/heterogeneous.cpp \
     src/integrators/volpath.cpp \
     src/core/reflection.cpp \
-    src/integrators/volpath_simple.cpp
+    src/integrators/volpath_simple.cpp \
+    src/bsdf/mirror.cpp \
+    src/light/point.cpp \
+    src/light/spot.cpp
 
 
 HEADERS  += \

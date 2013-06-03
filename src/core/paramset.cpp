@@ -45,4 +45,9 @@ PARAM_ACCESSOR(Vector3f, Vector, vector)
 PARAM_ACCESSOR(std::string, String, string)
 PARAM_ACCESSOR(Transform, Transform, transform)
 
+bool ParamSet::hasProperty(const std::string& strName) const
+{
+    return m_paramSet.find(strName) != m_paramSet.end();
+}
+
 WISP_NAMESPACE_END

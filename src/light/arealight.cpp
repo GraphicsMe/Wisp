@@ -52,7 +52,8 @@ public:
 
     std::string toString() const
     {
-        return formatString("AreaLight[radiance=%.3f]", m_radiance);
+        return formatString("AreaLight[radiance=%.3f %.3f %.3f]",
+                            m_radiance.x, m_radiance.y, m_radiance.z);
     }
 
 private:
