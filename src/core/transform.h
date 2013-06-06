@@ -105,8 +105,11 @@ public:
 
     static Transform rotate(float angleDegree, Vector3f axis)
     {
-        Matrix4f mat(1.0f);
-        glm::rotate(mat, angleDegree, axis);
+        Matrix4f mat(1.f, 0.f, 0.f, 0.f,
+                   0.f, 1.f, 0.f, 0.f,
+                   0.f, 0.f, 1.f, 0.f,
+                   0.f, 0.f, 0.f, 1.f);
+        mat = glm::rotate(mat, angleDegree, axis);
         return Transform(mat);
     }
 

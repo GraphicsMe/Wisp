@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Manually converted from Mitsuba XML, converted from MDL -->
+<scene>
+	<integrator type="volpath"/>
+
+	<sampler type="stratified">
+		<integer name="sampleCount" value="1024"/>
+	</sampler>
+
+	<camera type="perspective">
+		<transform name="toWorld">
+			<scale value="-1,1,1"/>
+			<lookat origin="278, 273, -800" target="278, 273, -799" up="0, 1, 0"/>
+		</transform>
+		<float name="fov" value="39.3077"/>
+		<integer name="width" value="512"/>
+		<integer name="height" value="512"/>
+	</camera>
+
+	<medium type="homogeneous">
+		<color name="sigmaS" value="0.002 0.002 0.002"/>
+		<color name="sigmaA" value="0.0005 0.0005 0.0005"/>
+		<transform name="toWorld">
+			<scale value="556, 548.8, 559.2"/>
+		</transform>
+	</medium>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_0.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<luminaire type="spot">
+		<transform name="toWorld">
+			<rotate axis="1,0,0" angle="90"/>
+			<translate value="278, 548.29999, 279.5"/>
+			
+		</transform>
+		<color name="intensity" value="2500000, 2500000, 2500000"/>
+		<!-- original tungsten color is "17, 11.8, 4"-->
+	</luminaire>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_2_nohole.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_3.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_4.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.117, 0.373, 0.100"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_5.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.61, 0.62, 0.06"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_6.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_7.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_8.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_9.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_10.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_11.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_12.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_13.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_14.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_15.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
+</scene>
