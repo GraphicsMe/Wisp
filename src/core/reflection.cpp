@@ -14,11 +14,11 @@ Color3f fresnelCond(float cosi, const Color3f& eta, const Color3f& k)
     return (rParl2 + rPerp2) / 2.f;
 }
 
-Color3f fresnelDiel(float cosi, float cost, const Color3f& etaI, const Color3f& etaT)
+float fresnelDiel(float cosi, float cost, float etaI, float etaT)
 {
-    Color3f rParl = ((etaT * cosi) - (etaI * cost)) /
+    float rParl = ((etaT * cosi) - (etaI * cost)) /
                     ((etaT * cosi) + (etaI * cost));
-    Color3f rPerp = ((etaI * cosi) - (etaT * cost)) /
+    float rPerp = ((etaI * cosi) - (etaT * cost)) /
                     ((etaI * cosi) + (etaT * cost));
     return (rParl*rParl + rPerp*rPerp) / 2.f;
 }
@@ -43,7 +43,8 @@ Color3f FresnelDielectric::eval(float cosi) const
     else
     {
         float cost = std::sqrt(std::max(0.f, 1.f - sint*sint));
-        return fresnelDiel(std::abs(cosi), cost, Color3f(ei), Color3f(et));
+        float fr = fresnelDiel(std::abs(cosi), cost, ei, et);
+        return Color3f(fr);
     }
 }
 

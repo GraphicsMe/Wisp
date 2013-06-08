@@ -342,28 +342,6 @@ public:
         return std::string("WavefrontOBJ[]");
     }
 
-    virtual void addChild(Object* pChild)
-    {
-        switch(pChild->getClassType())
-        {
-        case EBSDF:
-            if (m_bsdf)
-            {
-                std::cout << m_bsdf->toString() << std::endl;
-                throw WispException("Shape: try to register multiple BSDF intances!");
-            }
-            m_bsdf = static_cast<BSDF*>(pChild);
-            break;
-        case ELuminaire:
-            m_light = static_cast<Light*>(pChild);
-            break;
-
-        default:
-            throw WispException(formatString("Shape::addChild(%s) is not supported!",
-                                             pChild->getClassType()).c_str());
-        }
-    }
-
     void prepare()
     {
         if (!m_bsdf)

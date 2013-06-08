@@ -153,6 +153,11 @@ public:
         return pMax - pMin;
     }
 
+    Point3f getCenter() const
+    {
+        return (pMax - pMin) / 2.f;
+    }
+
     int maximumExtent() const
     {
         Vector3f d = pMax - pMin;

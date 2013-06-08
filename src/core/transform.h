@@ -64,6 +64,20 @@ public:
         m_inverse = Matrix4f();
     }
 
+    inline static Transform scale(Vector3f v)
+    {
+        Matrix4f m(v.x, 0.f, 0.f, 0.f,
+                   0.f, v.y, 0.f, 0.f,
+                   0.f, 0.f, v.z, 0.f,
+                   0.f, 0.f, 0.f, 1.f);
+        Matrix4f minv(1.f/v.x, 0.f, 0.f, 0.f,
+                   0.f, 1.f/v.y, 0.f, 0.f,
+                   0.f, 0.f, 1.f/v.z, 0.f,
+                   0.f, 0.f, 0.f, 1.f);
+        return Transform(m, minv);
+    }
+
+
     static Transform scale(float x, float y, float z)
     {
         Matrix4f m(x, 0.f, 0.f, 0.f,

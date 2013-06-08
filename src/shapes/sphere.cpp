@@ -7,8 +7,19 @@ class Sphere : public Shape
 public:
     Sphere(const ParamSet& paramSet)
     {
+        m_objectToWorld = Transform::translate(paramSet.getPoint("center", Point3f(0.f)));
         m_radius = paramSet.getFloat("radius", 1.f);
-        m_center = paramSet.getPoint("center", Point3f(0.f, 0.f, 0.f));
+        if (paramSet.hasProperty("toWorld"))
+        {
+            Transform toWorld = paramSet.getTransform("toWorld");
+            float scale = glm::length(toWorld * Vector3f(1.f, 0.f, 0.f));
+            m_objectToWorld = toWorld * Transform::scale(Vector3f(1.f/scale)) * m_objectToWorld;
+            m_radius *= scale;
+        }
+
+        m_flipNormals = paramSet.getBoolean("flipNormals", false);
+        m_center = m_objectToWorld * Point4f(0.f, 0.f, 0.f, 1.f);
+        m_invSurfaceArea = 1.f / (4.f * M_PI * m_radius * m_radius);
     }
 
     ~Sphere()
@@ -18,20 +29,33 @@ public:
 
     virtual float area() const
     {
-        return M_PI * m_radius * m_radius;
+        return 4.f * M_PI * m_radius * m_radius;
     }
 
-    virtual float pdf() const
+    virtual float pdfArea() const
     {
-        return 1.0f / area();
+        return m_invSurfaceArea;
     }
 
-    /*virtual void samplePosition(const Point2f& sample, Point3f& p, Normal3f& n) const
+    virtual float sampleArea(ShapeSamplingRecord &sRec, const Point2f &sample) const
     {
-        Vector3f dir = uniformSphere(sample.x, sample.y);
-        p = m_center + m_radius * dir;
-        n = dir;
-    }*/
+        Vector3f v = uniformSphere(sample.x, sample.y);
+        sRec.n = Normal3f(v);
+        sRec.p = m_center + m_radius * v;
+        return m_invSurfaceArea;
+    }
+
+    /*
+    virtual float pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &x) const
+    {
+        return 0.f;
+    }
+
+    virtual float sampleSolidAngle(ShapeSamplingRecord& sRec,const Point3f& x, const Point2f sample) const
+    {
+        return 0.f;
+    }
+    */
 
     virtual bool rayIntersect(const Ray& ray)
     {
@@ -75,12 +99,14 @@ public:
             if (thit > ray.maxt) return false;
         }
 
-        its.t = thit;
         //intersection record
+        its.t = thit;
         its.p = ray(its.t);
         its.uv = Point2f(1.0f, 1.0f);
         its.shape = this;
         its.geoFrame = Frame(glm::normalize(its.p-m_center));
+        if (m_flipNormals)
+            its.geoFrame.n *= -1;
         its.shFrame = its.geoFrame;
         its.wo = its.toLocal(-ray.d);
 
@@ -102,6 +128,9 @@ public:
 private:
     float m_radius;
     Point3f m_center;
+    bool m_flipNormals;
+    float m_invSurfaceArea;
+    Transform m_objectToWorld;
 };
 
 WISP_REGISTER_CLASS(Sphere, "sphere")

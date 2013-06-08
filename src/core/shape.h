@@ -52,9 +52,9 @@ public:
     
     Shape() : m_bsdf(NULL),m_light(NULL) {}
 
+    // virtual
     virtual bool canIntersect() const { return true; }
     virtual void refine(std::vector<ShapePtr>&) const;
-    void fullyRefine(std::vector<ShapePtr> &refined) const;
 
     virtual bool rayIntersect(const Ray& ray);
     virtual bool rayIntersect(const Ray& ray, Intersection& its);
@@ -67,13 +67,16 @@ public:
     virtual float sampleSolidAngle(ShapeSamplingRecord& sRec,const Point3f& x, const Point2f sample) const;    
 
     virtual BBox getBoundingBox() const = 0;
+    virtual void addChild(Object* pChild);
 
+    // non-virtual
     BSDF* getBSDF() { return m_bsdf; }
     const BSDF* getBSDF() const { return m_bsdf; }
     bool isLight() const { return m_light != NULL; }
     Light* getLight() { return m_light; }
     const Light* getLight() const { return m_light; }
     const std::string& getName() const { return m_name; }
+    void fullyRefine(std::vector<ShapePtr> &refined) const;
 
     // object related
     EClassType getClassType() const { return EShape; }

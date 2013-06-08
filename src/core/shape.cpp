@@ -1,5 +1,6 @@
 #include "shape.h"
 #include "light.h"
+#include "bsdf.h"
 
 WISP_NAMESPACE_BEGIN
 
@@ -79,5 +80,27 @@ float Shape::pdfSolidAngle(const ShapeSamplingRecord &sRec, const Point3f &from)
         return this->pdfArea(sRec) * distSqr * std::sqrt(distSqr) / dp;
     else
         return 0.0f;
+}
+
+void Shape::addChild(Object* pChild)
+{
+    switch(pChild->getClassType())
+    {
+    case EBSDF:
+        if (m_bsdf)
+        {
+            std::cout << m_bsdf->toString() << std::endl;
+            throw WispException("Shape: try to register multiple BSDF intances!");
+        }
+        m_bsdf = static_cast<BSDF*>(pChild);
+        break;
+    case ELuminaire:
+        m_light = static_cast<Light*>(pChild);
+        break;
+
+    default:
+        throw WispException(formatString("Shape::addChild(%s) is not supported!",
+                                         pChild->getClassType()).c_str());
+    }
 }
 WISP_NAMESPACE_END
