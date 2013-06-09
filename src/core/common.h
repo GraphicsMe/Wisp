@@ -235,6 +235,7 @@ inline float isZero(Vector3f v)
 }
 
 extern std::string formatString(const char *fmt, ...);
+extern std::vector<std::string> splitString(const std::string& str, std::string delim);
 
 extern Vector3f uniformSphere(float u1, float u2);
 extern Vector3f cosineHemisphere(float u1, float u2);

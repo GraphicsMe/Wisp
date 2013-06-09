@@ -6,7 +6,6 @@
 #include <sstream>
 #include <unordered_map>
 
-#include <boost/functional/hash.hpp>
 WISP_NAMESPACE_BEGIN
 
 class TriangleMesh : public Shape
@@ -198,6 +197,8 @@ private:
     TriangleMesh* m_pMesh;
 };
 
+static size_t pc, uvc, nc;
+
 class WavefrontOBJ : public TriangleMesh
 {
 public:
@@ -231,12 +232,14 @@ public:
                 lineStream >> p.x >> p.y >> p.z;
                 p = toWorld * Point4f(p.x, p.y, p.z, 1.0f);
                 positions.push_back(p);
+                pc = positions.size();
             }
             else if (prefix == "vt")
             {
                 Point2f vt;
                 lineStream >> vt.x >> vt.y;
                 texcoords.push_back(vt);
+                uvc = texcoords.size();
             }
             else if (prefix == "vn")
             {
@@ -244,6 +247,7 @@ public:
                 lineStream >> vn.x >> vn.y >> vn.z;
                 vn = glm::normalize(toWorld * vn);
                 normals.push_back(vn);
+                nc = normals.size();
             }
             else if (prefix == "f")
             {
@@ -358,6 +362,9 @@ public:
         for (size_t i = 0; i < m_triangleCount; ++i)
             m_distr.append(m_triangles[i]->area());
         m_distr.normalize();
+        fprintf (stderr, "Bound: %f %f %f\t%f %f %f\n",
+                 m_bound.pMin.x, m_bound.pMin.y, m_bound.pMin.z,
+                 m_bound.pMax.x, m_bound.pMax.y, m_bound.pMax.z);
     }
 
 protected:
@@ -368,12 +375,29 @@ protected:
         {}
         OBJVertex(const std::string& indices)
         {
-            p = n = uv = 0;
-            int ret = sscanf (indices.c_str(), "%d/%d/%d", &p, &uv, &n);
-            assert (ret == 3 || ret == 1);
-            --p;
-            --uv;
-            --n;
+            p = uv = n = 0;
+            std::vector<std::string> tokens = splitString(indices, "/");
+            if (tokens.size() == 1) //p
+                p = atoi(tokens[0].c_str());
+            else if (tokens.size() == 3) //pvn
+            {
+                p = atoi(tokens[0].c_str());
+                uv = atoi(tokens[1].c_str());
+                n = atoi(tokens[2].c_str());
+            }
+            else if (indices.find("//") == std::string::npos) // pv
+            {
+                p = atoi(tokens[0].c_str());
+                n = atoi(tokens[2].c_str());
+            }
+            else // pv
+            {
+                p = atoi(tokens[0].c_str());
+                uv = atoi(tokens[1].c_str());
+            }
+            p = (p > 0 ? p - 1 : pc + p);
+            uv = (uv > 0 ? uv - 1 : uvc + uv);
+            n = (n > 0 ? n - 1 : nc + n);
         }
 
         inline bool operator==(const OBJVertex& v) const

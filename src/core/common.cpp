@@ -44,6 +44,20 @@ std::string formatString(const char *fmt, ...)
     return std::string(tmp);
 }
 
+std::vector<std::string> splitString(const std::string& str, std::string delim)
+{
+    std::vector<std::string> tokens;
+    std::string::size_type start = str.find_first_not_of(delim, 0);
+    std::string::size_type end = str.find_first_of(delim);
+    while (start != std::string::npos || end != std::string::npos)
+    {
+        tokens.push_back(str.substr(start, end - start));
+        start = str.find_first_not_of(delim, end);
+        end = str.find_first_of(delim, start);
+    }
+    return tokens;
+}
+
 Vector3f uniformSphere(float u1, float u2)
 {
     float z = 1.f - 2.f * u1;
