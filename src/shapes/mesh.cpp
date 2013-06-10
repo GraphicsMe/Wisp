@@ -205,6 +205,7 @@ public:
     WavefrontOBJ(const ParamSet& paramSet)
     {
         Transform toWorld = paramSet.getTransform("toWorld", Transform());
+        std::cout << "toWorld: \n" << toWorld.toString() << std::endl;
         std::string fileName = paramSet.getString("filename");
         fileName = g_sceneDirectory + fileName;
         std::ifstream inputStream(fileName);

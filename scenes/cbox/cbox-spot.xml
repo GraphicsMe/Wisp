@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Manually converted from Mitsuba XML, converted from MDL -->
 <scene>
-	<integrator type="path"/>
+	<integrator type="volpath"/>
 	
 	<sampler type="stratified">
-		<integer name="sampleCount" value="128"/>
+		<integer name="sampleCount" value="1024"/>
 	</sampler>
 
 	<camera type="perspective">
@@ -17,22 +17,129 @@
 		<integer name="height" value="512"/>
 	</camera>
 
+	<medium type="homogeneous">
+		<color name="sigmaS" value="0.002 0.002 0.002"/>
+		<color name="sigmaA" value="0.0005 0.0005 0.0005"/>
+		<transform name="toWorld">
+			<scale value="556, 548.8, 559.2"/>
+		</transform>
+	</medium>
+
 	<mesh type="obj">
-		<string name="filename" value="meshes/cbox_0.obj"/>
+		<string name="filename" value="meshes/cbox_0_full.obj"/>
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.75, 0.75, 0.75"/>
 		</bsdf>
 	</mesh>
 	
-	<luminaire type="spot">
+	<!--<luminaire type="spot">
 		<transform name="toWorld">
 			<rotate axis="1,0,0" angle="90"/>
 			<translate value="278, 548.29999, 279.5"/>
 			
 		</transform>
 		<color name="intensity" value="2500000, 2500000, 2500000"/>
-		<!-- original tungsten color is "17, 11.8, 4"-->
-	</luminaire>
+	</luminaire>-->
+	<!--<mesh type="obj">
+		<string name="filename" value="meshes/cbox_1.obj"/>
+		<transform name="toWorld">
+			<translate value="0, -0.5, 0"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.78, 0.78, 0.78"/>
+		</bsdf>
+		<luminaire type="area">
+			<color name="radiance" value="15, 15, 15"/>
+		</luminaire>
+	</mesh>-->
+
+	<!--
+	<mesh type="obj">
+		<string name="filename" value="../table/mesh_2.obj"/>
+		<transform name="toWorld">
+			<rotate axis="1,0,0" angle="-90"/>
+			<scale value="10,10,10"/>
+			<translate value="435,0,-50"/>
+		</transform>
+
+		<bsdf type="dielectric">
+			<float name="extIOR" value="1"/>
+			<float name="intIOR" value="1.33"/>
+		</bsdf>
+	</mesh>
+
+	
+	<mesh type="obj">
+		<string name="filename" value="../table/mesh_3.obj"/>
+		<transform name="toWorld">
+			<rotate axis="1,0,0" angle="-90"/>
+			<scale value="10,10,10"/>
+			<translate value="435,0,-50"/>
+		</transform>
+
+		<bsdf type="dielectric">
+			<float name="extIOR" value="1"/>
+			<float name="intIOR" value="1.5"/>
+		</bsdf>
+	</mesh>
+
+	<mesh type="obj">
+		<string name="filename" value="../table/mesh_4.obj"/>
+		<transform name="toWorld">
+			<rotate axis="1,0,0" angle="-90"/>
+			<scale value="10,10,10"/>
+			<translate value="435,0,-50"/>
+		</transform>
+
+		<bsdf type="dielectric">
+			<float name="extIOR" value="1.5"/>
+			<float name="intIOR" value="1.33"/>
+		</bsdf>
+	</mesh>-->
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/right_light.obj"/>
+		<transform name="toWorld">
+			<translate value="0.5, 0, 0"/>
+		</transform>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.78, 0.78, 0.78"/>
+		</bsdf>
+		<luminaire type="area">
+			<color name="radiance" value="15, 15, 15"/>
+		</luminaire>
+	</mesh>
+	
+	<mesh type="obj">
+		<transform name="toWorld">
+			<rotate axis="0,1,0" angle="-90"/>
+			<scale value="10,10,10"/>
+			<translate value="100, 1, 300"/>
+		</transform>
+		<string name="filename" value="../ajax/ajax.obj"/>
+		<bsdf type="dielectric">
+			<color name="albedo" value="0.75, 0.25, 0.25"/>
+		</bsdf>
+	</mesh>
+
+	<!--
+	<mesh type="obj">
+		<transform name="toWorld">
+			<scale value="500,500,500"/>
+			<translate value="290, 145, 260"/>
+		</transform>
+		<string name="filename" value="meshes/dragon.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.25, 0.25"/>
+		</bsdf>
+	</mesh>-->
+	
+	<mesh type="obj">
+		<string name="filename" value="meshes/cbox_0_full.obj"/>
+		<bsdf type="diffuse">
+			<color name="albedo" value="0.75, 0.75, 0.75"/>
+		</bsdf>
+	</mesh>
 
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_2_nohole.obj"/>
@@ -61,7 +168,7 @@
 			<color name="albedo" value="0.61, 0.62, 0.06"/>
 		</bsdf>
 	</mesh>
-	
+	<!--
 	<mesh type="obj">
 		<string name="filename" value="meshes/cbox_6.obj"/>
 		<bsdf type="diffuse">
@@ -130,5 +237,5 @@
 		<bsdf type="diffuse">
 			<color name="albedo" value="0.75, 0.75, 0.75"/>
 		</bsdf>
-	</mesh>
+	</mesh>-->
 </scene>

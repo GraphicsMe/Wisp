@@ -127,6 +127,19 @@ public:
         return Transform(mat);
     }
 
+    std::string toString()
+    {
+        return formatString(
+                    "%.3f %.3f %.3f %.3f\n"
+                    "%.3f %.3f %.3f %.3f\n"
+                    "%.3f %.3f %.3f %.3f\n"
+                    "%.3f %.3f %.3f %.3f\n",
+                    m_transform[0][0], m_transform[0][1], m_transform[0][2], m_transform[0][3],
+                    m_transform[1][0], m_transform[1][1], m_transform[1][2], m_transform[1][3],
+                    m_transform[2][0], m_transform[2][1], m_transform[2][2], m_transform[2][3],
+                    m_transform[3][0], m_transform[3][1], m_transform[3][2], m_transform[3][3]);
+    }
+
 private:
     Matrix4f m_transform;
     Matrix4f m_inverse;
