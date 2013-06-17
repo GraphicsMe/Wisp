@@ -15,6 +15,7 @@ public:
         if (Frame::cosTheta(bRec.wo) <= 0.f)
             return Color3f(0.f);
         bRec.wi = Vector3f(-bRec.wo.x, -bRec.wo.y, bRec.wo.z);
+        bRec.sampledType = EDeltaReflection;
         return Color3f(1.f);
     }
 
@@ -24,6 +25,7 @@ public:
             return Color3f(0.f);
         bRec.wi = Vector3f(-bRec.wo.x, -bRec.wo.y, bRec.wo.z);
         pdf = 1.f;
+        bRec.sampledType = EDeltaReflection;
         return Color3f(1.f);
     }
 

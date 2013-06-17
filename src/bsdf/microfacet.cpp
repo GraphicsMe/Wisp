@@ -63,13 +63,14 @@ public:
             float alphaT = m_distribution->unifyRoughness(m_alpha);
             Normal3f h = m_distribution->sample(sample, alphaT);
             bRec.wi = reflect(bRec.wo, h);
-            //bRec.wi = Vector3f(-bRec.wo.x, -bRec.wo.y, bRec.wo.z);
+            bRec.sampledType = EGlossyReflection;
             if (Frame::cosTheta(bRec.wi) <= 0.f)
                 return Color3f(0.f);
         }
         else
         {
             bRec.wi = cosineHemisphere(sample.x, sample.y);
+            bRec.sampledType = EDiffuseReflection;
         }
 
         pdf = this->pdf(bRec);

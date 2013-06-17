@@ -1,6 +1,13 @@
 #include "light.h"
 
 WISP_NAMESPACE_BEGIN
+Light::Light(const ParamSet& paramSet)
+{
+    m_lightToWorld = paramSet.getTransform("toWorld", Transform());
+    m_worldToLight = m_lightToWorld.inverse();
+    m_intersectable = false;
+}
+
 Color3f Light::Le(const Vector3f&) const
 {
     throw WispException("Unimplemented Light::Le() method called");

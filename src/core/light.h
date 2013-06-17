@@ -26,6 +26,9 @@ struct LightSamplingRecord
 class Light : public Object
 {
 public:
+    Light(const ParamSet& paramSet);
+    inline bool isIntersectable() const { return m_intersectable; }
+
     virtual Color3f Le(const Vector3f& dir) const;
     virtual Color3f Le(const ShapeSamplingRecord& sRec, const Vector3f& dir) const;
     virtual float pdf(const Point3f& p, const LightSamplingRecord& lRec) const;
@@ -34,6 +37,7 @@ public:
     EClassType getClassType() const { return ELuminaire; }
 
 protected:
+    bool m_intersectable;
     Transform m_worldToLight, m_lightToWorld;
 };
 

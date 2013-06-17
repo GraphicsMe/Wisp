@@ -6,9 +6,10 @@ WISP_NAMESPACE_BEGIN
 class AreaLight : public Light
 {
 public:
-    AreaLight(const ParamSet& paramSet) : m_shape(NULL)
+    AreaLight(const ParamSet& paramSet) : Light(paramSet), m_shape(NULL)
     {
         m_radiance = paramSet.getColor("radiance", Color3f(1.f));
+        m_intersectable = true;
     }
 
     void sample_f(const Point3f& p, LightSamplingRecord& lRec, const Point2f& sample) const

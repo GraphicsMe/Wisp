@@ -16,6 +16,7 @@ public:
         if (Frame::cosTheta(bRec.wo) <= 0.f)
             return Color3f(0.f);
         bRec.wi = cosineHemisphere(sample.x, sample.y);
+        bRec.sampledType = EDiffuseReflection;
         return m_albedo;
     }
 
@@ -26,6 +27,7 @@ public:
 
         bRec.wi = cosineHemisphere(sample.x, sample.y);
         pdf = Frame::cosTheta(bRec.wi) * INV_PI;
+        bRec.sampledType = EDiffuseReflection;
         return m_albedo;
     }
 

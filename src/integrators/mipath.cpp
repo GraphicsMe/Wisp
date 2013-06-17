@@ -37,7 +37,7 @@ public:
                 Vector3f wi = -lRec.d;
                 BSDFQueryRecord bRec(its, its.toLocal(wi));
                 Color3f bsdfVal = bsdf->eval(bRec);
-                float bsdfPdf = bsdf->pdf(bRec);
+                float bsdfPdf = lRec.light->isIntersectable() ? bsdf->pdf(bRec) : 0.f;
                 float weight = powerHeuristic(1, lRec.pdf, 1, bsdfPdf);
                 L += pathThrough * lRec.value * bsdfVal * weight;
             }
@@ -57,14 +57,14 @@ public:
                 lRec = LightSamplingRecord(its, -ray.d);
                 lRec.value = its.Le(-ray.d);
 
-                float lightPdf = scene->pdfLight(ray.o, lRec);
+                float lightPdf = (!(bRec.sampledType & BSDF::EDelta)) ? scene->pdfLight(ray.o, lRec) : 0.f;
                 float weight = powerHeuristic(1, bsdfPdf, 1, lightPdf);
                 L += pathThrough * lRec.value * bsdfVal * weight;
             }
 
             pathThrough *= bsdfVal;
 
-            if (depth > 3)
+            if (depth > 3 && !(bRec.sampledType & BSDF::ETransmission))
             {
                 float continueProbability = std::min(0.5f, vectorMax(pathThrough));
                 if (sampler->next1D() > continueProbability)

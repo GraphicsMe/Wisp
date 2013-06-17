@@ -88,12 +88,14 @@ public:
         {
             bRec.wi = reflect(bRec.wo);
             pdf = Fr.x;
+            bRec.sampledType = EDeltaReflection;
             return m_kr;
         }
         else                // transmission
         {
             bRec.wi = refract(bRec.wo, eta, cost);
             pdf = 1.f - Fr.x;
+            bRec.sampledType = EDeltaTransmission;
             return m_kt * eta * eta;
         }
     }

@@ -6,13 +6,14 @@ WISP_NAMESPACE_BEGIN
 class SpotLight : public Light
 {
 public:
-    SpotLight(const ParamSet& paramSet)
+    SpotLight(const ParamSet& paramSet) : Light(paramSet)
     {
         m_intensity = paramSet.getColor("intensity", Color3f(1.f));
-        m_lightToWorld = paramSet.getTransform("toWorld", Transform());
         if (paramSet.hasProperty("position"))
+        {
             m_lightToWorld = Transform::translate(paramSet.getPoint("position"));
-        m_worldToLight = m_lightToWorld.inverse();
+            m_worldToLight = m_lightToWorld.inverse();
+        }
         m_position = m_lightToWorld * Point4f(0.f, 0.f, 0.f, 1.f);
         m_cutoffAngle = paramSet.getFloat("cutoffAngle", 20);
         m_beamWidth = paramSet.getFloat("beamWidth", m_cutoffAngle * 3.f/4.f) ;
